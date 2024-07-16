@@ -1,6 +1,8 @@
+// src/components/Login.js
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -8,7 +10,7 @@ const Login = () => {
   const [name, setName] = useState("");
   const [isRegistering, setIsRegistering] = useState(false); // Toggle between login and register
   const [error, setError] = useState("");
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { setIsAuthenticated, setUser } = useContext(AuthContext); // Destructure setUser from context
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -38,7 +40,9 @@ const Login = () => {
       const token = data.token;
 
       localStorage.setItem("authToken", token);
+      const decoded = jwtDecode(token);
       setIsAuthenticated(true);
+      setUser(decoded); // Set the user in context
       navigate("/");
     } catch (err) {
       setError(err.message);

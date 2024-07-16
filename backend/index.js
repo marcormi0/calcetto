@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
+const cors = require("cors"); // Import cors package
 require("dotenv").config();
 
 const User = require("./models/User");
@@ -12,6 +13,14 @@ const adminAuth = require("./middleware/auth");
 const app = express();
 app.use(express.json());
 app.use(passport.initialize());
+app.use(cors());
+
+const corsOptions = {
+  origin: "http://localhost:3001", // Replace with your frontend URL
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+app.use(cors(corsOptions));
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -56,9 +65,14 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    // Include the role in the JWT payload
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
     res.json({ token });
   } catch (error) {
     res.status(500).json({ message: "Server error" });

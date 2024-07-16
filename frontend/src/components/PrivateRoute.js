@@ -1,13 +1,20 @@
 // src/components/PrivateRoute.js
-
 import React, { useContext } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
-const PrivateRoute = () => {
-  const { isAuthenticated } = useContext(AuthContext);
+const PrivateRoute = ({ component: Component, role, ...rest }) => {
+  const { isAuthenticated, role: userRole } = useContext(AuthContext);
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/auth" />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  if (role && userRole !== role) {
+    return <Navigate to="/" />;
+  }
+
+  return <Component {...rest} />;
 };
 
 export default PrivateRoute;
