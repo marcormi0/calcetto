@@ -2,7 +2,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Correctly import jwt-decode
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,7 +10,7 @@ const Login = () => {
   const [name, setName] = useState("");
   const [isRegistering, setIsRegistering] = useState(false); // Toggle between login and register
   const [error, setError] = useState("");
-  const { setIsAuthenticated, setUser } = useContext(AuthContext); // Destructure setUser from context
+  const { setIsAuthenticated, setUser, setRole } = useContext(AuthContext); // Destructure setRole from context
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -42,6 +42,7 @@ const Login = () => {
       localStorage.setItem("authToken", token);
       const decoded = jwtDecode(token);
       setIsAuthenticated(true);
+      setRole(decoded.role); // Set the role in context
       setUser(decoded); // Set the user in context
       navigate("/");
     } catch (err) {

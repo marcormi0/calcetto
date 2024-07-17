@@ -1,16 +1,21 @@
 // src/App.js
 import React, { useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Link,
+} from "react-router-dom";
 import Home from "./components/Home";
 import MatchHistory from "./components/MatchHistory";
 import Profile from "./components/Profile";
 import PlayerStats from "./components/PlayerStats";
 import VoteMatch from "./components/VoteMatch";
-import LoadMatch from "./components/LoadMatch"; // New Component
 import Register from "./components/Register";
 import Login from "./components/Login";
+import LoadMatch from "./components/LoadMatch"; // Import LoadMatch component
 import { AuthContext } from "./context/AuthContext";
-import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 
 function App() {
@@ -49,29 +54,39 @@ function App() {
         )}
         <Routes>
           <Route
+            path="/"
+            element={isAuthenticated ? <Home /> : <Navigate to="/login" />}
+          />
+          <Route
             path="/match-history"
-            element={<PrivateRoute component={MatchHistory} />}
+            element={
+              isAuthenticated ? <MatchHistory /> : <Navigate to="/login" />
+            }
           />
           <Route
             path="/profile"
-            element={<PrivateRoute component={Profile} />}
+            element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
           />
           <Route
             path="/player-stats"
-            element={<PrivateRoute component={PlayerStats} />}
+            element={
+              isAuthenticated ? <PlayerStats /> : <Navigate to="/login" />
+            }
           />
           <Route
             path="/vote-match"
-            element={<PrivateRoute component={VoteMatch} />}
+            element={isAuthenticated ? <VoteMatch /> : <Navigate to="/login" />}
           />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route
-            path="/load-match"
-            element={<PrivateRoute component={LoadMatch} role="admin" />}
-          />
-          <Route path="/" element={<PrivateRoute component={Home} />} />
-          <Route path="*" element={<Login />} /> {/* Fallback route */}
+          {role === "admin" && (
+            <Route
+              path="/load-match"
+              element={
+                isAuthenticated ? <LoadMatch /> : <Navigate to="/login" />
+              }
+            />
+          )}
         </Routes>
       </div>
     </Router>

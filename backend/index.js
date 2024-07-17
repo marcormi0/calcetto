@@ -5,10 +5,13 @@ const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const cors = require("cors"); // Import cors package
 require("dotenv").config();
+require("./auth");
 
 const User = require("./models/User");
 const Match = require("./models/Match");
 const adminAuth = require("./middleware/auth");
+const playerRoutes = require("./routes/players");
+const playerStatsRoutes = require("./routes/playerStats");
 
 const app = express();
 app.use(express.json());
@@ -27,6 +30,12 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 });
 
+//import players routes
+app.use("/players", playerRoutes);
+//import player stats routes
+app.use("/playerStats", playerStatsRoutes);
+
+//register route
 app.post("/register", async (req, res) => {
   const { email, password, name } = req.body;
 
@@ -51,6 +60,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
+//login route
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 

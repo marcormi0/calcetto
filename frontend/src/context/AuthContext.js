@@ -1,13 +1,13 @@
 // src/context/AuthContext.js
 import React, { createContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Correctly import jwt-decode
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [role, setRole] = useState("user");
-  const [user, setUser] = useState(null); // Add user state
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -26,7 +26,14 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, role, setUser }}
+      value={{
+        isAuthenticated,
+        setIsAuthenticated,
+        role,
+        setRole,
+        user,
+        setUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Match = require("../models/match");
+const Match = require("../models/Match");
 const verifyToken = require("../middleware/auth");
 
 router.post("/:id/vote", verifyToken, async (req, res) => {
