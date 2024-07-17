@@ -37,15 +37,25 @@ const PlayerStats = () => {
 
   return (
     <div>
-      <h2>Player Statistics</h2>
+      <h2>Players Stats</h2>
       <ul>
         {players.map((player, index) => (
           <li key={index}>
-            <div>Name: {player.name}</div>
-            <div>
-              Avatar: <img src={player.avatar} alt="Avatar" />
-            </div>
-            <div>Statistics: {JSON.stringify(player.statistics)}</div>
+            <p>
+              {player.name}{" "}
+              <img src={player.avatar || "default-avatar.png"} alt="Avatar" />
+            </p>
+            <p>
+              Number of matches: {JSON.stringify(player.stats.matchesPlayed)}
+              <b> </b>
+              Wins: {JSON.stringify(player.stats.wins)}
+              <b> </b>
+              Losses: {JSON.stringify(player.stats.losses)}
+              <b> </b>
+              Goals: {JSON.stringify(player.stats.goals)}
+              <b> </b>
+              Assists: {JSON.stringify(player.stats.assists)}
+            </p>
           </li>
         ))}
       </ul>

@@ -22,7 +22,7 @@ const Profile = () => {
         });
 
         const data = await response.json();
-        if (data != null) {
+        if (data) {
           setPlayer(data);
         }
         setLoading(false);
@@ -53,7 +53,7 @@ const Profile = () => {
       }
 
       const data = await response.json();
-      setPlayer(data.player);
+      setPlayer(data);
       setIsEditing(false);
     } catch (error) {
       console.error("Error saving player profile:", error);
@@ -84,6 +84,7 @@ const Profile = () => {
       </div>
     );
   } else {
+    console.log("Avatar URL:", player.avatar); // Log the avatar URL
     return (
       <div>
         <h2>Player Profile</h2>
@@ -107,7 +108,8 @@ const Profile = () => {
           <div>
             <p>Name: {player.name}</p>
             <p>
-              Avatar: <img src={player.avatar} alt="Avatar" />
+              Avatar:{" "}
+              <img src={player.avatar || "default-avatar.png"} alt="Avatar" />
             </p>
             <button onClick={() => setIsEditing(true)}>Edit Profile</button>
           </div>
