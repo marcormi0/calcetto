@@ -12,6 +12,7 @@ const Match = require("./models/Match");
 const adminAuth = require("./middleware/auth");
 const playerRoutes = require("./routes/players");
 const playerStatsRoutes = require("./routes/playerStats");
+const matchesRoutes = require("./routes/matches");
 
 const app = express();
 app.use(express.json());
@@ -32,8 +33,12 @@ mongoose.connect(process.env.MONGO_URI, {
 
 //import players routes
 app.use("/players", playerRoutes);
+
 //import player stats routes
 app.use("/playerStats", playerStatsRoutes);
+
+//import matches routes
+app.use("/matches", matchesRoutes);
 
 //register route
 app.post("/register", async (req, res) => {
@@ -95,7 +100,7 @@ app.post("/load-match", adminAuth, async (req, res) => {
   try {
     const newMatch = new Match({
       date,
-      players: players.split(",").map((player) => player.trim()), // Assuming players are passed as comma-separated string
+      players: players,
       result,
     });
 

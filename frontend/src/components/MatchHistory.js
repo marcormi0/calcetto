@@ -1,12 +1,61 @@
-import React from "react";
+// src/components/MatchHistory.js
+import React, { useState, useEffect } from "react";
 
-function MatchHistory() {
+const MatchHistory = () => {
+  const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await fetch("/matches", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch matches");
+        }
+
+        const data = await response.json();
+        setMatches(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchMatches();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
-    <div className="container">
+    <div className="match-history">
       <h2>Match History</h2>
-      <p>View the history of all matches.</p>
+      <ul>
+        {matches.map((match) => (
+          <li key={match._id}>
+            <p>Date: {new Date(match.date).toLocaleDateString()}</p>
+            <p>
+              Players: {match.players.map((player) => player.name).join(", ")}
+            </p>
+            <p>Result: {match.result}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
 export default MatchHistory;

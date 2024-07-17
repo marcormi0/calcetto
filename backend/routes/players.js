@@ -21,6 +21,28 @@ router.get(
   }
 );
 
+// Get all players ids
+router.get(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const players = await Player.find({});
+      if (!players) {
+        return res.status(404).json({ message: "No players found" });
+      }
+      const playersIds = players.map((player) => {
+        const { userId, name } = player;
+        return { userId, name };
+      });
+
+      res.json(playersIds);
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
+
 // Create a new player
 router.post(
   "/",

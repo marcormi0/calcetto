@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Match = require("../models/Match");
 const verifyToken = require("../middleware/auth");
+const passport = require("passport");
 
 router.post("/:id/vote", verifyToken, async (req, res) => {
   const matchId = req.params.id;
@@ -27,5 +28,19 @@ router.post("/:id/vote", verifyToken, async (req, res) => {
   await match.save();
   res.send("Ratings submitted successfully");
 });
+
+// Get all matches
+router.get(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  async (_req, res) => {
+    try {
+      const matches = await Match.find().populate("players");
+      res.json(matches);
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
 
 module.exports = router;

@@ -1,14 +1,17 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const MatchSchema = new mongoose.Schema({
   date: {
     type: Date,
     required: true,
   },
-  players: {
-    type: [String], // Array of player names or IDs
-    required: true,
-  },
+  players: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Player",
+    },
+  ],
   result: {
     type: String,
     required: true,
