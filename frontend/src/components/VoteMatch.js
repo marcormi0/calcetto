@@ -72,21 +72,23 @@ const VoteMatch = () => {
   };
 
   if (!match) {
-    return <div>Loading...</div>;
+    return <div className="container mt-4">Loading...</div>;
   }
 
   if (!match.players.some((player) => player.userId === user.id)) {
-    return <div>You didn't participate in this match</div>;
+    return (
+      <div className="container mt-4">You didn't participate in this match</div>
+    );
   }
 
   return (
-    <div className="vote-container">
+    <div className="container mt-4">
       <h2>Vote for your teammates</h2>
       <form onSubmit={handleSubmit}>
         {match.players.map(
           (player) =>
             player.userId !== user.id && (
-              <div key={player._id}>
+              <div key={player._id} className="form-group">
                 <label>{player.name}</label>
                 <input
                   type="range"
@@ -96,14 +98,17 @@ const VoteMatch = () => {
                   onChange={(e) =>
                     handleRatingChange(player._id, e.target.value)
                   }
+                  className="form-control-range"
                 />
               </div>
             )
         )}
-        <button type="submit">Submit Votes</button>
+        <button type="submit" className="btn btn-primary mt-3">
+          Submit Votes
+        </button>
       </form>
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">{success}</p>}
+      {error && <div className="alert alert-danger mt-3">{error}</div>}
+      {success && <div className="alert alert-success mt-3">{success}</div>}
     </div>
   );
 };

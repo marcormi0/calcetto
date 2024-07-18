@@ -67,40 +67,52 @@ const LoadMatch = () => {
   };
 
   return (
-    <div className="load-match-container">
+    <div className="container mt-4">
       <div className="load-match-form">
         <h2>Load Match</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            type="date"
-            placeholder="Date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-          <select
-            multiple
-            value={selectedPlayers}
-            onChange={handlePlayerChange}
-            required
-          >
-            {players.map((player) => (
-              <option key={player._id} value={player._id}>
-                {player.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            placeholder="Result"
-            value={result}
-            onChange={(e) => setResult(e.target.value)}
-            required
-          />
-          <button type="submit">Submit</button>
+          <div className="form-group">
+            <label>Date</label>
+            <input
+              type="date"
+              placeholder="Date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="form-control"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Players</label>
+            <select
+              multiple
+              value={selectedPlayers}
+              onChange={handlePlayerChange}
+              className="form-control"
+              required
+            >
+              {players.map((player) => (
+                <option key={player.userId} value={player.userId}>
+                  {player.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Result</label>
+            <input
+              type="text"
+              placeholder="Result"
+              value={result}
+              onChange={(e) => setResult(e.target.value)}
+              className="form-control"
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary mt-3">Submit</button>
         </form>
-        {error && <p className="error">{error}</p>}
-        {success && <p className="success">{success}</p>}
+        {error && <div className="alert alert-danger mt-3">{error}</div>}
+        {success && <div className="alert alert-success mt-3">{success}</div>}
       </div>
     </div>
   );
