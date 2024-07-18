@@ -13,6 +13,12 @@ const MatchSchema = new mongoose.Schema({
       ref: "Player",
     },
   ],
+  playersWhoVoted: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   result: {
     type: String,
     required: true,

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Match = require("../models/Match");
 const passport = require("passport");
+const Player = require("../models/Player");
 
 router.post("/:id/vote/:userId", async (req, res) => {
   const matchId = req.params.id;
@@ -14,16 +15,14 @@ router.post("/:id/vote/:userId", async (req, res) => {
       return res.status(403).send("You did not participate in this match");
     }
 
-    if (match.ratings.some((rating) => rating.player.toString() === userId)) {
+    if (match.playersWhoVoted.includes(userId)) {
       return res.status(403).send("You have already voted for this match");
     }
 
     ratings.forEach(async (rating) => {
-      const player = await Player.findById(rating.player);
-      player.ratings.push(rating.rating);
-      await player.save();
       match.ratings.push({ player: rating.player, rating: rating.rating });
     });
+    match.playersWhoVoted.push(userId);
 
     await match.save();
     res.send("Ratings submitted successfully");
