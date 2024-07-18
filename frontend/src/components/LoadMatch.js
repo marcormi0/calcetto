@@ -1,6 +1,7 @@
 // src/components/LoadMatch.js
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./LoadMatch.css"; // Import the custom CSS
 
 const LoadMatch = () => {
   const [date, setDate] = useState("");
@@ -9,6 +10,7 @@ const LoadMatch = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [players, setPlayers] = useState([]);
+  const [teams, setTeams] = useState({});
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -32,19 +34,26 @@ const LoadMatch = () => {
     fetchPlayers();
   }, []);
 
-  const handlePlayerChange = (e) => {
-    const value = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-
-    // Allow selecting only up to 10 players
-    if (value.length <= 10) {
-      setSelectedPlayers(value);
+  const handlePlayerClick = (playerId, team) => {
+    let updatedPlayers = [...selectedPlayers];
+    if (updatedPlayers.includes(playerId)) {
+      updatedPlayers = updatedPlayers.filter((id) => id !== playerId);
+      const updatedTeams = { ...teams };
+      delete updatedTeams[playerId];
+      setTeams(updatedTeams);
     } else {
-      setError("You can select up to 10 players only.");
-      setTimeout(() => setError(""), 3000);
+      if (updatedPlayers.length < 10) {
+        updatedPlayers.push(playerId);
+        setTeams({
+          ...teams,
+          [playerId]: team,
+        });
+      } else {
+        setError("You can select up to 10 players only.");
+        setTimeout(() => setError(""), 3000);
+      }
     }
+    setSelectedPlayers(updatedPlayers);
   };
 
   const handleSubmit = async (e) => {
@@ -57,16 +66,20 @@ const LoadMatch = () => {
       return;
     }
 
+    const playersWithTeams = selectedPlayers.map((playerId) => ({
+      playerId,
+      team: teams[playerId],
+    }));
+
     try {
       const token = localStorage.getItem("authToken");
-      console.log(selectedPlayers);
       const response = await fetch("/load-match", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-auth-token": token,
         },
-        body: JSON.stringify({ date, players: selectedPlayers, result }),
+        body: JSON.stringify({ date, players: playersWithTeams, result }),
       });
 
       if (!response.ok) {
@@ -78,6 +91,7 @@ const LoadMatch = () => {
       setDate("");
       setSelectedPlayers([]);
       setResult("");
+      setTeams({});
     } catch (err) {
       setError(err.message);
     }
@@ -101,19 +115,35 @@ const LoadMatch = () => {
           </div>
           <div className="form-group">
             <label>Players</label>
-            <select
-              multiple
-              value={selectedPlayers}
-              onChange={handlePlayerChange}
-              className="form-control"
-              required
-            >
+            <div className="list-group">
               {players.map((player) => (
-                <option key={player._id} value={player._id}>
-                  {player.name}
-                </option>
+                <div
+                  key={player._id}
+                  className={`list-group-item d-flex ${
+                    selectedPlayers.includes(player._id) ? "active" : ""
+                  }`}
+                >
+                  <div
+                    className={`flex-fill text-center p-2 team-white ${
+                      teams[player._id] === "White" ? "selected-white" : ""
+                    }`}
+                    onClick={() => handlePlayerClick(player._id, "White")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {player.name} (White)
+                  </div>
+                  <div
+                    className={`flex-fill text-center p-2 team-black ${
+                      teams[player._id] === "Black" ? "selected-black" : ""
+                    }`}
+                    onClick={() => handlePlayerClick(player._id, "Black")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {player.name} (Black)
+                  </div>
+                </div>
               ))}
-            </select>
+            </div>
           </div>
           <div className="form-group">
             <label>Result</label>

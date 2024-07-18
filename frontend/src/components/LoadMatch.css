@@ -1,0 +1,15 @@
+/* LoadMatch.css */
+
+.team-white, .team-black {
+    user-select: none; /* Make text unselectable */
+  }
+
+  .selected-white {
+    background-color: white;
+    color: black; /* Ensure text color stays black */
+  }
+
+  .selected-black {
+    background-color: black;
+    color: white;
+  }
