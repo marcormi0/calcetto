@@ -81,6 +81,17 @@ const VoteMatch = () => {
     );
   }
 
+  if (match.playersWhoVoted.includes(user.id)) {
+    return (
+      <div className="container mt-4">
+        You already voted for this match
+        <p>Date: {new Date(match.date).toLocaleDateString()}</p>
+        <p>Players: {match.players.map((player) => player.name).join(", ")}</p>
+        <p>Result: {match.result}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mt-4">
       <h2>Vote for your teammates</h2>

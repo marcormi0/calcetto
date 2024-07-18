@@ -1,5 +1,6 @@
 // src/components/LoadMatch.js
 import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const LoadMatch = () => {
   const [date, setDate] = useState("");
@@ -36,7 +37,14 @@ const LoadMatch = () => {
       e.target.selectedOptions,
       (option) => option.value
     );
-    setSelectedPlayers(value);
+
+    // Allow selecting only up to 10 players
+    if (value.length <= 10) {
+      setSelectedPlayers(value);
+    } else {
+      setError("You can select up to 10 players only.");
+      setTimeout(() => setError(""), 3000);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -44,8 +52,14 @@ const LoadMatch = () => {
     setError("");
     setSuccess("");
 
+    if (selectedPlayers.length !== 10) {
+      setError("You must select exactly 10 players.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("authToken");
+      console.log(selectedPlayers);
       const response = await fetch("/load-match", {
         method: "POST",
         headers: {
@@ -61,6 +75,9 @@ const LoadMatch = () => {
       }
 
       setSuccess("Match information loaded successfully");
+      setDate("");
+      setSelectedPlayers([]);
+      setResult("");
     } catch (err) {
       setError(err.message);
     }
@@ -92,7 +109,7 @@ const LoadMatch = () => {
               required
             >
               {players.map((player) => (
-                <option key={player.userId} value={player.userId}>
+                <option key={player._id} value={player._id}>
                   {player.name}
                 </option>
               ))}
@@ -109,7 +126,13 @@ const LoadMatch = () => {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary mt-3">Submit</button>
+          <button
+            type="submit"
+            className="btn btn-primary mt-3"
+            disabled={selectedPlayers.length !== 10}
+          >
+            Submit
+          </button>
         </form>
         {error && <div className="alert alert-danger mt-3">{error}</div>}
         {success && <div className="alert alert-success mt-3">{success}</div>}
