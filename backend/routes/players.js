@@ -32,8 +32,8 @@ router.get(
         return res.status(404).json({ message: "No players found" });
       }
       const playersIds = players.map((player) => {
-        const { userId, name } = player;
-        return { userId, name };
+        const { _id, userId, name } = player;
+        return { _id, userId, name };
       });
 
       res.json(playersIds);

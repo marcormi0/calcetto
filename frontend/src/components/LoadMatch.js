@@ -85,7 +85,7 @@ const LoadMatch = () => {
             required
           >
             {players.map((player) => (
-              <option key={player.userId} value={player.userId}>
+              <option key={player._id} value={player._id}>
                 {player.name}
               </option>
             ))}
