@@ -17,6 +17,18 @@ const MatchSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  ratings: [
+    {
+      player: {
+        type: Schema.Types.ObjectId,
+        ref: "Player",
+      },
+      rating: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
 });
 
 module.exports = mongoose.model("Match", MatchSchema);
