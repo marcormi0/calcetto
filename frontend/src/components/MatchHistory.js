@@ -1,5 +1,7 @@
 // src/components/MatchHistory.js
 import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./MatchHistory.css"; // Import the custom CSS file
 
 const MatchHistory = () => {
   const [matches, setMatches] = useState([]);
@@ -41,22 +43,58 @@ const MatchHistory = () => {
   }
 
   return (
-    <div className="match-history">
-      <h2>Match History</h2>
-      <ul>
-        {matches.map((match) => (
-          <li key={match._id}>
-            <p>Date: {new Date(match.date).toLocaleDateString()}</p>
-            <p>
-              Players:{" "}
-              {match.players
-                .map((playerObj) => playerObj.player.name)
-                .join(", ")}
+    <div className="container mt-4 unselectable">
+      <h2 className="mb-4">Match History</h2>
+      {matches.map((match) => (
+        <div key={match._id} className="card mb-4">
+          <div className="card-body">
+            <h5 className="card-title">
+              Date: {new Date(match.date).toLocaleDateString()}
+            </h5>
+            <div className="row">
+              <div className="col-md-6">
+                <h6>White Team</h6>
+                <ul className="list-group">
+                  {match.players
+                    .filter((playerObj) => playerObj.team === "White")
+                    .map((playerObj) => (
+                      <li
+                        key={playerObj.player._id}
+                        className="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        {playerObj.player.name}
+                        <span className="badge badge-pill goals-badge">
+                          {playerObj.goals} goals
+                        </span>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+              <div className="col-md-6">
+                <h6>Black Team</h6>
+                <ul className="list-group">
+                  {match.players
+                    .filter((playerObj) => playerObj.team === "Black")
+                    .map((playerObj) => (
+                      <li
+                        key={playerObj.player._id}
+                        className="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        {playerObj.player.name}
+                        <span className="badge badge-pill goals-badge">
+                          {playerObj.goals} goals
+                        </span>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            </div>
+            <p className="mt-3">
+              <strong>Result:</strong> {match.result}
             </p>
-            <p>Result: {match.result}</p>
-          </li>
-        ))}
-      </ul>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

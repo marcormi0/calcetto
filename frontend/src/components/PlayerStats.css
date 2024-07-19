@@ -1,0 +1,10 @@
+.unselectable {
+    user-select: none; /* Standard syntax */
+    -webkit-user-select: none; /* Webkit (Safari/Chrome) browsers */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+  }
+
+  .card-title, .card-text {
+    color: black; /* Ensure text is visible on all backgrounds */
+  }

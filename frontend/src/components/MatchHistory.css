@@ -1,0 +1,12 @@
+.unselectable {
+    user-select: none; /* Standard syntax */
+    -webkit-user-select: none; /* Webkit (Safari/Chrome) browsers */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+  }
+
+  .goals-badge {
+    background-color: #f8f9fa; /* Light background */
+    color: black; /* Black text color */
+    border: 1px solid #dee2e6; /* Optional: Add border for better visibility */
+  }
