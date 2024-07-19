@@ -48,7 +48,10 @@ const MatchHistory = () => {
           <li key={match._id}>
             <p>Date: {new Date(match.date).toLocaleDateString()}</p>
             <p>
-              Players: {match.players.map((player) => player.name).join(", ")}
+              Players:{" "}
+              {match.players
+                .map((playerObj) => playerObj.player.name)
+                .join(", ")}
             </p>
             <p>Result: {match.result}</p>
           </li>

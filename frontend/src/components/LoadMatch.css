@@ -13,3 +13,13 @@
     background-color: black;
     color: white;
   }
+
+  .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .list-group-item .btn {
+    margin: 0 5px;
+  }

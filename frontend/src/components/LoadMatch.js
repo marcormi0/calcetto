@@ -1,16 +1,15 @@
-// src/components/LoadMatch.js
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./LoadMatch.css"; // Import the custom CSS
+import "./LoadMatch.css";
 
 const LoadMatch = () => {
   const [date, setDate] = useState("");
   const [selectedPlayers, setSelectedPlayers] = useState([]);
-  const [result, setResult] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [players, setPlayers] = useState([]);
   const [teams, setTeams] = useState({});
+  const [goals, setGoals] = useState({});
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -56,6 +55,29 @@ const LoadMatch = () => {
     setSelectedPlayers(updatedPlayers);
   };
 
+  const handleGoalsChange = (playerId, increment) => {
+    setGoals((prevGoals) => ({
+      ...prevGoals,
+      [playerId]: (prevGoals[playerId] || 0) + increment,
+    }));
+  };
+
+  const calculateResult = () => {
+    let whiteTeamGoals = 0;
+    let blackTeamGoals = 0;
+
+    selectedPlayers.forEach((playerId) => {
+      const playerGoals = goals[playerId] || 0;
+      if (teams[playerId] === "White") {
+        whiteTeamGoals += playerGoals;
+      } else if (teams[playerId] === "Black") {
+        blackTeamGoals += playerGoals;
+      }
+    });
+
+    return `${whiteTeamGoals}-${blackTeamGoals}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -66,10 +88,13 @@ const LoadMatch = () => {
       return;
     }
 
-    const playersWithTeams = selectedPlayers.map((playerId) => ({
-      playerId,
-      team: teams[playerId],
+    const players = selectedPlayers.map((player) => ({
+      player,
+      team: teams[player],
+      goals: goals[player] || 0,
     }));
+
+    const result = calculateResult();
 
     try {
       const token = localStorage.getItem("authToken");
@@ -79,7 +104,11 @@ const LoadMatch = () => {
           "Content-Type": "application/json",
           "x-auth-token": token,
         },
-        body: JSON.stringify({ date, players: playersWithTeams, result }),
+        body: JSON.stringify({
+          date,
+          players,
+          result,
+        }),
       });
 
       if (!response.ok) {
@@ -90,8 +119,8 @@ const LoadMatch = () => {
       setSuccess("Match information loaded successfully");
       setDate("");
       setSelectedPlayers([]);
-      setResult("");
       setTeams({});
+      setGoals({});
     } catch (err) {
       setError(err.message);
     }
@@ -141,20 +170,34 @@ const LoadMatch = () => {
                   >
                     {player.name} (Black)
                   </div>
+                  <div className="d-flex align-items-center">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => handleGoalsChange(player._id, -1)}
+                      disabled={
+                        !selectedPlayers.includes(player._id) ||
+                        (goals[player._id] || 0) <= 0
+                      }
+                    >
+                      -
+                    </button>
+                    <span className="mx-2">{goals[player._id] || 0}</span>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => handleGoalsChange(player._id, 1)}
+                      disabled={!selectedPlayers.includes(player._id)}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
           <div className="form-group">
-            <label>Result</label>
-            <input
-              type="text"
-              placeholder="Result"
-              value={result}
-              onChange={(e) => setResult(e.target.value)}
-              className="form-control"
-              required
-            />
+            <label>Result: {calculateResult()}</label>
           </div>
           <button
             type="submit"

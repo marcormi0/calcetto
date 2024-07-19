@@ -75,7 +75,7 @@ const VoteMatch = () => {
     return <div className="container mt-4">Loading...</div>;
   }
 
-  if (!match.players.some((player) => player.userId === user.id)) {
+  if (!match.players.some((playerObj) => playerObj.player.userId === user.id)) {
     return (
       <div className="container mt-4">You didn't participate in this match</div>
     );
@@ -86,7 +86,10 @@ const VoteMatch = () => {
       <div className="container mt-4">
         You already voted for this match
         <p>Date: {new Date(match.date).toLocaleDateString()}</p>
-        <p>Players: {match.players.map((player) => player.name).join(", ")}</p>
+        <p>
+          Players:{" "}
+          {match.players.map((playerObj) => playerObj.player.name).join(", ")}
+        </p>
         <p>Result: {match.result}</p>
       </div>
     );
@@ -97,17 +100,17 @@ const VoteMatch = () => {
       <h2>Vote for your teammates</h2>
       <form onSubmit={handleSubmit}>
         {match.players.map(
-          (player) =>
-            player.userId !== user.id && (
-              <div key={player._id} className="form-group">
-                <label>{player.name}</label>
+          (playerObj) =>
+            playerObj.player.userId !== user.id && (
+              <div key={playerObj.player._id} className="form-group">
+                <label>{playerObj.player.name}</label>
                 <input
                   type="range"
                   min="1"
                   max="10"
-                  value={ratings[player._id] || 1}
+                  value={ratings[playerObj.player._id] || 1}
                   onChange={(e) =>
-                    handleRatingChange(player._id, e.target.value)
+                    handleRatingChange(playerObj.player._id, e.target.value)
                   }
                   className="form-control-range"
                 />

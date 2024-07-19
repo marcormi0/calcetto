@@ -10,8 +10,12 @@ router.post("/:id/vote/:userId", async (req, res) => {
   const { ratings } = req.body;
 
   try {
-    const match = await Match.findById(matchId).populate("players");
-    if (!match.players.some((player) => player.userId.toString() === userId)) {
+    const match = await Match.findById(matchId).populate("players.player");
+    if (
+      !match.players.some(
+        (playerObj) => playerObj.player.userId.toString() === userId
+      )
+    ) {
       return res.status(403).send("You did not participate in this match");
     }
 
@@ -37,7 +41,7 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   async (_req, res) => {
     try {
-      const matches = await Match.find().populate("players");
+      const matches = await Match.find().populate("players.player");
       res.json(matches);
     } catch (error) {
       res.status(500).json({ message: "Server error" });
@@ -53,7 +57,7 @@ router.get(
     try {
       const lastMatch = await Match.findOne()
         .sort({ date: -1 })
-        .populate("players")
+        .populate("players.player")
         .exec();
       res.json(lastMatch);
     } catch (error) {

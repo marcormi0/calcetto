@@ -100,7 +100,7 @@ app.post("/load-match", adminAuth, async (req, res) => {
   try {
     const newMatch = new Match({
       date,
-      players: players,
+      players,
       result,
     });
 

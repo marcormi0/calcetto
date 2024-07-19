@@ -1,4 +1,3 @@
-// backend/models/Match.js
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -9,8 +8,21 @@ const MatchSchema = new mongoose.Schema({
   },
   players: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "Player",
+      player: {
+        type: Schema.Types.ObjectId,
+        ref: "Player",
+        required: true,
+      },
+      team: {
+        type: String,
+        enum: ["White", "Black"],
+        required: true,
+      },
+      goals: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
     },
   ],
   playersWhoVoted: [
