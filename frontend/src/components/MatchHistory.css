@@ -1,12 +1,65 @@
 .unselectable {
-    user-select: none; /* Standard syntax */
-    -webkit-user-select: none; /* Webkit (Safari/Chrome) browsers */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-  }
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
 
-  .goals-badge {
-    background-color: #f8f9fa; /* Light background */
-    color: black; /* Black text color */
-    border: 1px solid #dee2e6; /* Optional: Add border for better visibility */
-  }
+.list-group-item {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  margin-bottom: 10px;
+  padding: 15px;
+}
+
+.teams {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.team {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.team h5 {
+  background-color: #e9ecef;
+  padding: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  margin: 0 0 5px 0;
+  padding: 5px 10px;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  min-height: 40px;
+  width: 100%;
+}
+
+.player-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+
+.goal-icons {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+
+.goal-icon {
+  color: #007bff;
+  margin-left: 2px;
+  font-size: 0.9em;
+}

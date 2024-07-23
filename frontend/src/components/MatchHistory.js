@@ -1,7 +1,6 @@
-// src/components/MatchHistory.js
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./MatchHistory.css"; // Import the custom CSS file
+import "./MatchHistory.css";
 
 const MatchHistory = () => {
   const [matches, setMatches] = useState([]);
@@ -23,6 +22,7 @@ const MatchHistory = () => {
         }
 
         const data = await response.json();
+        data.sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort matches by date, latest first
         setMatches(data);
         setLoading(false);
       } catch (err) {
@@ -42,59 +42,50 @@ const MatchHistory = () => {
     return <div>Error: {error}</div>;
   }
 
+  const renderGoals = (goals) => {
+    return Array(goals)
+      .fill()
+      .map((_, i) => <i key={i} className="fas fa-futbol goal-icon"></i>);
+  };
+
+  const renderTeam = (players, team) => {
+    const sortedPlayers = [...players].sort((a, b) => b.goals - a.goals);
+    return (
+      <div className="team">
+        <h5>{team} Team</h5>
+        {sortedPlayers.map((playerObj) => (
+          <div key={playerObj.player._id} className="player-info">
+            <span className="player-name" title={playerObj.player.name}>
+              {playerObj.player.name}
+            </span>
+            <span className="goal-icons">{renderGoals(playerObj.goals)}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="container mt-4 unselectable">
       <h2 className="mb-4">Match History</h2>
-      {matches.map((match) => (
-        <div key={match._id} className="card mb-4">
-          <div className="card-body">
-            <h5 className="card-title">
-              Date: {new Date(match.date).toLocaleDateString()}
-            </h5>
-            <div className="row">
-              <div className="col-md-6">
-                <h6>White Team</h6>
-                <ul className="list-group">
-                  {match.players
-                    .filter((playerObj) => playerObj.team === "White")
-                    .map((playerObj) => (
-                      <li
-                        key={playerObj.player._id}
-                        className="list-group-item d-flex justify-content-between align-items-center"
-                      >
-                        {playerObj.player.name}
-                        <span className="badge badge-pill goals-badge">
-                          {playerObj.goals} goals
-                        </span>
-                      </li>
-                    ))}
-                </ul>
-              </div>
-              <div className="col-md-6">
-                <h6>Black Team</h6>
-                <ul className="list-group">
-                  {match.players
-                    .filter((playerObj) => playerObj.team === "Black")
-                    .map((playerObj) => (
-                      <li
-                        key={playerObj.player._id}
-                        className="list-group-item d-flex justify-content-between align-items-center"
-                      >
-                        {playerObj.player.name}
-                        <span className="badge badge-pill goals-badge">
-                          {playerObj.goals} goals
-                        </span>
-                      </li>
-                    ))}
-                </ul>
-              </div>
+      <ul className="list-group">
+        {matches.map((match) => (
+          <li key={match._id} className="list-group-item">
+            <p>Date: {new Date(match.date).toLocaleDateString()}</p>
+            <div className="teams">
+              {renderTeam(
+                match.players.filter((p) => p.team === "White"),
+                "White"
+              )}
+              {renderTeam(
+                match.players.filter((p) => p.team === "Black"),
+                "Black"
+              )}
             </div>
-            <p className="mt-3">
-              <strong>Result:</strong> {match.result}
-            </p>
-          </div>
-        </div>
-      ))}
+            <p>Result: {match.result}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
