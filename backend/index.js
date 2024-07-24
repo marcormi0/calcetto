@@ -8,8 +8,6 @@ require("dotenv").config();
 require("./auth");
 
 const User = require("./models/User");
-const Match = require("./models/Match");
-const adminAuth = require("./middleware/auth");
 const playerRoutes = require("./routes/players");
 const playerStatsRoutes = require("./routes/playerStats");
 const matchesRoutes = require("./routes/matches");
@@ -89,23 +87,6 @@ app.post("/login", async (req, res) => {
       }
     );
     res.json({ token });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-app.post("/load-match", adminAuth, async (req, res) => {
-  const { date, players, result } = req.body;
-
-  try {
-    const newMatch = new Match({
-      date,
-      players,
-      result,
-    });
-
-    await newMatch.save();
-    res.status(201).json({ message: "Match information loaded successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }

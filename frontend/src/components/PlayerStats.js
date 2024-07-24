@@ -62,6 +62,9 @@ const PlayerStats = () => {
                   <strong>Losses:</strong> {player.stats.losses}
                 </p>
                 <p className="card-text">
+                  <strong>Draws:</strong> {player.stats.draws}
+                </p>
+                <p className="card-text">
                   <strong>Goals:</strong> {player.stats.goals}
                 </p>
                 <p className="card-text">
