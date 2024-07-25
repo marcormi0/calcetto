@@ -14,7 +14,7 @@ const PlayerSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    required: true,
+    defalt: "default-avatar.png",
   },
   stats: {
     matchesPlayed: {

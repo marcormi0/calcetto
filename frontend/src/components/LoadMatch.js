@@ -98,7 +98,7 @@ const LoadMatch = () => {
 
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("/load-match", {
+      const response = await fetch("/matches/load-match", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -62,7 +62,7 @@ const PlayerStats = () => {
                   <strong>Losses:</strong> {player.stats.losses}
                 </p>
                 <p className="card-text">
-                  <strong>Draws:</strong> {player.stats.draws}
+                  <strong>Draws:</strong> {player.stats.draw}
                 </p>
                 <p className="card-text">
                   <strong>Goals:</strong> {player.stats.goals}
