@@ -25,26 +25,32 @@ const MatchSchema = new mongoose.Schema({
       },
     },
   ],
-  playersWhoVoted: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
   result: {
     type: String,
     required: true,
   },
   ratings: [
     {
-      player: {
+      voter: {
         type: Schema.Types.ObjectId,
-        ref: "Player",
-      },
-      rating: {
-        type: Number,
+        ref: "User",
         required: true,
       },
+      ratings: [
+        {
+          player: {
+            type: Schema.Types.ObjectId,
+            ref: "Player",
+            required: true,
+          },
+          rating: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 10,
+          },
+        },
+      ],
     },
   ],
 });

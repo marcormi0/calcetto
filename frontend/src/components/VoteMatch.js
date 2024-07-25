@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { Form, Button, Alert, Card } from "react-bootstrap";
 
 const VoteMatch = () => {
   const { user } = useContext(AuthContext);
@@ -24,13 +25,22 @@ const VoteMatch = () => {
 
         const data = await response.json();
         setMatch(data);
+
+        // Initialize ratings with 1 for all players except the current user
+        const initialRatings = {};
+        data.players.forEach((playerObj) => {
+          if (playerObj.player.userId !== user.id) {
+            initialRatings[playerObj.player._id] = "1";
+          }
+        });
+        setRatings(initialRatings);
       } catch (err) {
         setError("Error fetching the last match");
       }
     };
 
     fetchLastMatch();
-  }, []);
+  }, [user.id]);
 
   const handleRatingChange = (playerId, rating) => {
     setRatings((prevRatings) => ({
@@ -55,7 +65,7 @@ const VoteMatch = () => {
         body: JSON.stringify({
           ratings: Object.entries(ratings).map(([player, rating]) => ({
             player,
-            rating,
+            rating: Number(rating),
           })),
         }),
       });
@@ -81,48 +91,63 @@ const VoteMatch = () => {
     );
   }
 
-  if (match.playersWhoVoted.includes(user.id)) {
+  if (match.ratings.some((rating) => rating.voter === user.id)) {
     return (
-      <div className="container mt-4">
-        You already voted for this match
-        <p>Date: {new Date(match.date).toLocaleDateString()}</p>
-        <p>
-          Players:{" "}
-          {match.players.map((playerObj) => playerObj.player.name).join(", ")}
-        </p>
-        <p>Result: {match.result}</p>
-      </div>
+      <Card className="container mt-4">
+        <Card.Body>
+          <Card.Title>You already voted for this match</Card.Title>
+          <Card.Text>
+            Date: {new Date(match.date).toLocaleDateString()}
+            <br />
+            Players:{" "}
+            {match.players.map((playerObj) => playerObj.player.name).join(", ")}
+            <br />
+            Result: {match.result}
+          </Card.Text>
+        </Card.Body>
+      </Card>
     );
   }
 
   return (
     <div className="container mt-4">
-      <h2>Vote for your teammates</h2>
-      <form onSubmit={handleSubmit}>
+      <h2>Vote the players performances</h2>
+      <Form onSubmit={handleSubmit}>
         {match.players.map(
           (playerObj) =>
             playerObj.player.userId !== user.id && (
-              <div key={playerObj.player._id} className="form-group">
-                <label>{playerObj.player.name}</label>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={ratings[playerObj.player._id] || 1}
-                  onChange={(e) =>
-                    handleRatingChange(playerObj.player._id, e.target.value)
-                  }
-                  className="form-control-range"
-                />
-              </div>
+              <Form.Group key={playerObj.player._id}>
+                <Form.Label>{playerObj.player.name}</Form.Label>
+                <div className="d-flex align-items-center">
+                  <Form.Range
+                    min="1"
+                    max="10"
+                    value={ratings[playerObj.player._id] || 1}
+                    onChange={(e) =>
+                      handleRatingChange(playerObj.player._id, e.target.value)
+                    }
+                  />
+                  <span className="ms-2">
+                    {ratings[playerObj.player._id] || 1}
+                  </span>
+                </div>
+              </Form.Group>
             )
         )}
-        <button type="submit" className="btn btn-primary mt-3">
+        <Button type="submit" className="mt-3">
           Submit Votes
-        </button>
-      </form>
-      {error && <div className="alert alert-danger mt-3">{error}</div>}
-      {success && <div className="alert alert-success mt-3">{success}</div>}
+        </Button>
+      </Form>
+      {error && (
+        <Alert variant="danger" className="mt-3">
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="success" className="mt-3">
+          {success}
+        </Alert>
+      )}
     </div>
   );
 };

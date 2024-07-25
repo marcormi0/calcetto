@@ -13,6 +13,7 @@ router.post("/:id/vote/:userId", async (req, res) => {
 
   try {
     const match = await Match.findById(matchId).populate("players.player");
+
     if (
       !match.players.some(
         (playerObj) => playerObj.player.userId.toString() === userId
@@ -21,14 +22,17 @@ router.post("/:id/vote/:userId", async (req, res) => {
       return res.status(403).send("You did not participate in this match");
     }
 
-    if (match.playersWhoVoted.includes(userId)) {
+    if (match.ratings.some((rating) => rating.voter.toString() === userId)) {
       return res.status(403).send("You have already voted for this match");
     }
 
-    ratings.forEach(async (rating) => {
-      match.ratings.push({ player: rating.player, rating: rating.rating });
+    match.ratings.push({
+      voter: userId,
+      ratings: ratings.map((rating) => ({
+        player: rating.player,
+        rating: rating.rating,
+      })),
     });
-    match.playersWhoVoted.push(userId);
 
     await match.save();
     res.send("Ratings submitted successfully");
