@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode"; // Correctly import jwt-decode
+import { Container, Card, Form, Button, Alert } from "react-bootstrap";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -51,43 +52,63 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-form">
-        <h2>{isRegistering ? "Register" : "Login"}</h2>
-        <form onSubmit={handleSubmit}>
-          {isRegistering && (
-            <input
-              type="text"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          )}
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit">{isRegistering ? "Register" : "Login"}</button>
-        </form>
-        {error && <p className="error">{error}</p>}
-        <p onClick={() => setIsRegistering(!isRegistering)}>
-          {isRegistering
-            ? "Already have an account? Login"
-            : "Don't have an account? Register"}
-        </p>
-      </div>
-    </div>
+    <Container className="mt-4">
+      <Card>
+        <Card.Header as="h2">
+          {isRegistering ? "Register" : "Login"}
+        </Card.Header>
+        <Card.Body>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form onSubmit={handleSubmit}>
+            {isRegistering && (
+              <Form.Group className="mb-3">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </Form.Group>
+            )}
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              {isRegistering ? "Register" : "Login"}
+            </Button>
+          </Form>
+          <Card.Text className="mt-3">
+            <Button
+              variant="link"
+              onClick={() => setIsRegistering(!isRegistering)}
+            >
+              {isRegistering
+                ? "Already have an account? Login"
+                : "Don't have an account? Register"}
+            </Button>
+          </Card.Text>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 

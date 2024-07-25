@@ -1,6 +1,6 @@
-// src/components/Profile.js
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { Container, Card, Form, Button, Image, Alert } from "react-bootstrap";
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
@@ -9,25 +9,25 @@ const Profile = () => {
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchPlayerProfile = async () => {
       try {
         const token = localStorage.getItem("authToken");
-
         const response = await fetch(`/players/${user.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-
         const data = await response.json();
         if (data) {
           setPlayer(data);
+          setName(data.name);
+          setAvatar(data.avatar);
         }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching player profile:", error);
+        setError("Failed to load profile. Please try again.");
         setLoading(false);
       }
     };
@@ -38,7 +38,6 @@ const Profile = () => {
   const handleSaveProfile = async () => {
     try {
       const token = localStorage.getItem("authToken");
-
       const response = await fetch(`/players`, {
         method: "POST",
         headers: {
@@ -55,68 +54,86 @@ const Profile = () => {
       const data = await response.json();
       setPlayer(data);
       setIsEditing(false);
+      setError("");
     } catch (error) {
       console.error("Error saving player profile:", error);
+      setError("Failed to save profile. Please try again.");
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Container className="mt-4">
+        <Alert variant="info">Loading...</Alert>
+      </Container>
+    );
   }
 
-  if (!player) {
-    return (
-      <div>
-        <h2>Create Player Profile</h2>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Avatar URL"
-          value={avatar}
-          onChange={(e) => setAvatar(e.target.value)}
-        />
-        <button onClick={handleSaveProfile}>Save Profile</button>
-      </div>
-    );
-  } else {
-    console.log("Avatar URL:", player.avatar); // Log the avatar URL
-    return (
-      <div>
-        <h2>Player Profile</h2>
-        {isEditing ? (
-          <div>
-            <input
-              type="text"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Avatar URL"
-              value={avatar}
-              onChange={(e) => setAvatar(e.target.value)}
-            />
-            <button onClick={handleSaveProfile}>Save Profile</button>
-          </div>
-        ) : (
-          <div>
-            <p>Name: {player.name}</p>
-            <p>
-              Avatar:{" "}
-              <img src={player.avatar || "default-avatar.png"} alt="Avatar" />
-            </p>
-            <button onClick={() => setIsEditing(true)}>Edit Profile</button>
-          </div>
-        )}
-      </div>
-    );
-  }
+  return (
+    <Container className="mt-4">
+      <Card>
+        <Card.Header as="h2">
+          {player ? "Player Profile" : "Create Player Profile"}
+        </Card.Header>
+        <Card.Body>
+          {error && <Alert variant="danger">{error}</Alert>}
+          {!player || isEditing ? (
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Avatar URL</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter avatar URL"
+                  value={avatar}
+                  onChange={(e) => setAvatar(e.target.value)}
+                />
+              </Form.Group>
+              <Button variant="primary" onClick={handleSaveProfile}>
+                Save Profile
+              </Button>
+              {isEditing && (
+                <Button
+                  variant="secondary"
+                  className="ms-2"
+                  onClick={() => setIsEditing(false)}
+                >
+                  Cancel
+                </Button>
+              )}
+            </Form>
+          ) : (
+            <>
+              <Card.Title>{player.name}</Card.Title>
+              <Card.Text>
+                <Image
+                  src={player.avatar || "default-avatar.png"}
+                  alt="Avatar"
+                  roundedCircle
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    objectFit: "cover",
+                  }}
+                />
+              </Card.Text>
+              <Button variant="primary" onClick={() => setIsEditing(true)}>
+                Edit Profile
+              </Button>
+            </>
+          )}
+        </Card.Body>
+      </Card>
+    </Container>
+  );
 };
 
 export default Profile;
