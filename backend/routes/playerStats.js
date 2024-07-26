@@ -3,25 +3,43 @@
 const express = require("express");
 const router = express.Router();
 const Player = require("../models/Player");
+const Match = require("../models/Match");
 const passport = require("passport");
+const calculatePerformance = require("../utils/calculatePerformance");
 
-// GET all players with their statistics
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
+  async (_req, res) => {
     try {
-      const players = await Player.find().lean(); // Fetch all players
+      const players = await Player.find().lean();
+      const matches = await Match.find().lean();
 
-      // Example: Calculate statistics (you can adjust this logic as per your requirement)
-      const playersWithStats = players.map((player) => {
-        const { name, avatar, stats /* other player fields */ } = player;
-        const statistics = {
-          // Implement your statistics calculation logic here
-          // Example: Total matches played, win rate, etc.
-        };
-        return { name, avatar, stats };
-      });
+      const playersWithStats = await Promise.all(
+        players.map(async (player) => {
+          const { name, avatar, stats } = player;
+
+          // Get all ratings for this player
+          const allRatings = matches.flatMap((match) =>
+            match.ratings.flatMap((ratingGroup) =>
+              ratingGroup.ratings
+                .filter((r) => r.player.toString() === player._id.toString())
+                .map((r) => r.rating)
+            )
+          );
+
+          const performance = calculatePerformance(allRatings, stats);
+          const totalRatings = allRatings.length;
+
+          return {
+            name,
+            avatar,
+            stats,
+            performance,
+            totalRatings,
+          };
+        })
+      );
 
       res.json(playersWithStats);
     } catch (error) {
