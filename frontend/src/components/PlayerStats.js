@@ -36,7 +36,7 @@ const PlayerStats = () => {
   }
 
   return (
-    <Container>
+    <Container className="unselectable">
       <h2 className="mt-4 mb-3">Players Stats</h2>
       <Table striped bordered hover>
         <thead>

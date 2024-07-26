@@ -70,7 +70,7 @@ const Profile = () => {
   }
 
   return (
-    <Container className="mt-4">
+    <Container className="mt-4 unselectable">
       <Card>
         <Card.Header as="h2">
           {player ? "Player Profile" : "Create Player Profile"}

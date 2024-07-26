@@ -7,6 +7,7 @@ import {
   Navigate,
   Link,
 } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Home from "./components/Home";
 import MatchHistory from "./components/MatchHistory";
 import Profile from "./components/Profile";
@@ -14,40 +15,45 @@ import PlayerStats from "./components/PlayerStats";
 import VoteMatch from "./components/VoteMatch";
 import Register from "./components/Register";
 import Login from "./components/Login";
-import LoadMatch from "./components/LoadMatch"; // Import LoadMatch component
+import LoadMatch from "./components/LoadMatch";
+import LanguageSelector from "./components/LanguageSelector";
 import { AuthContext } from "./context/AuthContext";
 import "./App.css";
 
 function App() {
   const { isAuthenticated, role } = useContext(AuthContext);
+  const { t } = useTranslation();
 
   return (
     <Router>
-      <div className="App">
+      <div className="App unselectable">
         {isAuthenticated && (
           <header className="App-header">
             <nav>
               <ul>
                 <li>
-                  <Link to="/">Home</Link>
+                  <Link to="/">{t("Home")}</Link>
                 </li>
                 <li>
-                  <Link to="/match-history">Match History</Link>
+                  <Link to="/match-history">{t("Match History")}</Link>
                 </li>
                 <li>
-                  <Link to="/profile">Profile</Link>
+                  <Link to="/profile">{t("Profile")}</Link>
                 </li>
                 <li>
-                  <Link to="/player-stats">Player Stats</Link>
+                  <Link to="/player-stats">{t("Player Stats")}</Link>
                 </li>
                 <li>
-                  <Link to="/vote-match">Vote Match</Link>
+                  <Link to="/vote-match">{t("Vote Match")}</Link>
                 </li>
                 {role === "admin" && (
                   <li>
-                    <Link to="/load-match">Load Match</Link>
+                    <Link to="/load-match">{t("Load Match")}</Link>
                   </li>
                 )}
+                <li>
+                  <LanguageSelector />
+                </li>
               </ul>
             </nav>
           </header>

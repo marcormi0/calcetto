@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Form, Button, Alert, Card } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const VoteMatch = () => {
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const [match, setMatch] = useState(null);
   const [ratings, setRatings] = useState({});
@@ -20,7 +22,7 @@ const VoteMatch = () => {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch the last match");
+          setError(t("Error fetching the last match"));
         }
 
         const data = await response.json();
@@ -30,7 +32,7 @@ const VoteMatch = () => {
         const initialRatings = {};
         data.players.forEach((playerObj) => {
           if (playerObj.player.userId !== user.id) {
-            initialRatings[playerObj.player._id] = "1";
+            initialRatings[playerObj.player._id] = "6";
           }
         });
         setRatings(initialRatings);
@@ -40,7 +42,7 @@ const VoteMatch = () => {
     };
 
     fetchLastMatch();
-  }, [user.id]);
+  }, [t, user.id]);
 
   const handleRatingChange = (playerId, rating) => {
     setRatings((prevRatings) => ({
@@ -75,19 +77,21 @@ const VoteMatch = () => {
         throw new Error(data.message);
       }
 
-      setSuccess("Ratings submitted successfully");
+      setSuccess(t("Ratings submitted successfully"));
     } catch (err) {
       setError(err.message);
     }
   };
 
   if (!match) {
-    return <div className="container mt-4">Loading...</div>;
+    return <div className="container mt-4">{t("Loading...")}</div>;
   }
 
   if (!match.players.some((playerObj) => playerObj.player.userId === user.id)) {
     return (
-      <div className="container mt-4">You didn't participate in this match</div>
+      <div className="container mt-4">
+        {t("You didn't participate in this match")}
+      </div>
     );
   }
 
@@ -95,14 +99,14 @@ const VoteMatch = () => {
     return (
       <Card className="container mt-4">
         <Card.Body>
-          <Card.Title>You already voted for this match</Card.Title>
+          <Card.Title>{t("You already voted for this match")}</Card.Title>
           <Card.Text>
-            Date: {new Date(match.date).toLocaleDateString()}
+            {t("Date")}: {new Date(match.date).toLocaleDateString()}
             <br />
-            Players:{" "}
+            {t("Players")}:{" "}
             {match.players.map((playerObj) => playerObj.player.name).join(", ")}
             <br />
-            Result: {match.result}
+            {t("Result")}: {match.result}
           </Card.Text>
         </Card.Body>
       </Card>
@@ -110,8 +114,8 @@ const VoteMatch = () => {
   }
 
   return (
-    <div className="container mt-4">
-      <h2>Vote the players performances</h2>
+    <div className="container mt-4 unselectable">
+      <h2>{t("Vote the players performances")}</h2>
       <Form onSubmit={handleSubmit}>
         {match.players.map(
           (playerObj) =>
@@ -122,30 +126,30 @@ const VoteMatch = () => {
                   <Form.Range
                     min="1"
                     max="10"
-                    value={ratings[playerObj.player._id] || 1}
+                    value={ratings[playerObj.player._id] || 6}
                     onChange={(e) =>
                       handleRatingChange(playerObj.player._id, e.target.value)
                     }
                   />
                   <span className="ms-2">
-                    {ratings[playerObj.player._id] || 1}
+                    {ratings[playerObj.player._id] || 6}
                   </span>
                 </div>
               </Form.Group>
             )
         )}
         <Button type="submit" className="mt-3">
-          Submit Votes
+          {t("Submit Votes")}
         </Button>
       </Form>
       {error && (
         <Alert variant="danger" className="mt-3">
-          {error}
+          {t(error)}
         </Alert>
       )}
       {success && (
         <Alert variant="success" className="mt-3">
-          {success}
+          {t(success)}
         </Alert>
       )}
     </div>

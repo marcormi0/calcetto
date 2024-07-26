@@ -24,7 +24,7 @@ const Register = () => {
   };
 
   return (
-    <Container className="mt-4">
+    <Container className="mt-4 unselectable">
       <Card>
         <Card.Header as="h2">Register</Card.Header>
         <Card.Body>

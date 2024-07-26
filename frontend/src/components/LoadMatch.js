@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./LoadMatch.css";
 
 const LoadMatch = () => {
+  const { t } = useTranslation();
   const [date, setDate] = useState("");
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [error, setError] = useState("");
@@ -127,15 +129,15 @@ const LoadMatch = () => {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 unselectable">
       <div className="load-match-form">
-        <h2>Load Match</h2>
+        <h2>{t("Load Match")}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Date</label>
+            <label>{t("Date")}</label>
             <input
               type="date"
-              placeholder="Date"
+              placeholder={t("Date")}
               value={date}
               onChange={(e) => setDate(e.target.value)}
               className="form-control"
@@ -143,7 +145,7 @@ const LoadMatch = () => {
             />
           </div>
           <div className="form-group">
-            <label>Players</label>
+            <label>{t("Players")}</label>
             <div className="list-group">
               {players.map((player) => (
                 <div
@@ -159,7 +161,7 @@ const LoadMatch = () => {
                     onClick={() => handlePlayerClick(player._id, "White")}
                     style={{ cursor: "pointer" }}
                   >
-                    {player.name} (White)
+                    {player.name} ({t("White")})
                   </div>
                   <div
                     className={`flex-fill text-center p-2 team-black ${
@@ -168,7 +170,7 @@ const LoadMatch = () => {
                     onClick={() => handlePlayerClick(player._id, "Black")}
                     style={{ cursor: "pointer" }}
                   >
-                    {player.name} (Black)
+                    {player.name} ({t("Black")})
                   </div>
                   <div className="d-flex align-items-center">
                     <button
@@ -197,18 +199,22 @@ const LoadMatch = () => {
             </div>
           </div>
           <div className="form-group">
-            <label>Result: {calculateResult()}</label>
+            <label>
+              {t("Result")}: {calculateResult()}
+            </label>
           </div>
           <button
             type="submit"
             className="btn btn-primary mt-3"
             disabled={selectedPlayers.length !== 10}
           >
-            Submit
+            {t("Submit")}
           </button>
         </form>
-        {error && <div className="alert alert-danger mt-3">{error}</div>}
-        {success && <div className="alert alert-success mt-3">{success}</div>}
+        {error && <div className="alert alert-danger mt-3">{t(error)}</div>}
+        {success && (
+          <div className="alert alert-success mt-3">{t(success)}</div>
+        )}
       </div>
     </div>
   );

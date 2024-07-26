@@ -52,7 +52,7 @@ const Login = () => {
   };
 
   return (
-    <Container className="mt-4">
+    <Container className="mt-4 unselectable">
       <Card>
         <Card.Header as="h2">
           {isRegistering ? "Register" : "Login"}
