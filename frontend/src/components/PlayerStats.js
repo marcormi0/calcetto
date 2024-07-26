@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Container, Table, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./PlayerStats.css";
 
 const PlayerStats = () => {
+  const { t } = useTranslation();
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,38 +19,38 @@ const PlayerStats = () => {
           },
         });
         if (!response.ok) {
-          throw new Error("Failed to fetch player statistics");
+          throw new Error(t("Failed to fetch player statistics"));
         }
         const data = await response.json();
         setPlayers(data);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching player statistics:", error);
+        console.error(t("Error fetching player statistics"), error);
         setLoading(false);
       }
     };
 
     fetchPlayerStats();
-  }, []);
+  }, [t]);
 
   if (loading) {
-    return <div>Loading player statistics...</div>;
+    return <div>{t("Loading player statistics...")}</div>;
   }
 
   return (
     <Container className="unselectable">
-      <h2 className="mt-4 mb-3">Players Stats</h2>
+      <h2 className="mt-4 mb-3">{t("Player Stats")}</h2>
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Matches Played</th>
-            <th>Wins</th>
-            <th>Losses</th>
-            <th>Draws</th>
-            <th>Goals</th>
-            <th>Assists</th>
-            <th>Performance</th>
+            <th>{t("Name")}</th>
+            <th>{t("Matches Played")}</th>
+            <th>{t("Wins")}</th>
+            <th>{t("Losses")}</th>
+            <th>{t("Draws")}</th>
+            <th>{t("Goals")}</th>
+            <th>{t("Assists")}</th>
+            <th>{t("Performance")}</th>
           </tr>
         </thead>
         <tbody>
@@ -73,8 +75,10 @@ const PlayerStats = () => {
 };
 
 const PerformanceCell = ({ player }) => {
+  const { t } = useTranslation();
+
   if (!player.performance) {
-    return <span>N/A</span>;
+    return <span>{t("N/A")}</span>;
   }
 
   const performanceDisplay = <span>{player.performance.toFixed(2)}</span>;
@@ -85,8 +89,9 @@ const PerformanceCell = ({ player }) => {
         placement="top"
         overlay={
           <Tooltip id={`tooltip-${player.name}`}>
-            Il calcolo della performance di questo giocatore non è ancora
-            affidabile in quanto si basa su troppe poche votazioni
+            {t(
+              "The performance calculation for this player is not yet reliable as it is based on too few ratings."
+            )}
           </Tooltip>
         }
       >

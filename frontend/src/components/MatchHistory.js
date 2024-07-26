@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./MatchHistory.css";
 
 const MatchHistory = () => {
+  const { t } = useTranslation();
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -18,7 +20,7 @@ const MatchHistory = () => {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch matches");
+          throw new Error(t("Failed to fetch matches"));
         }
 
         const data = await response.json();
@@ -32,14 +34,18 @@ const MatchHistory = () => {
     };
 
     fetchMatches();
-  }, []);
+  }, [t]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>{t("Loading...")}</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div>
+        {t("Error")}: {error}
+      </div>
+    );
   }
 
   const renderGoals = (goals) => {
@@ -52,7 +58,9 @@ const MatchHistory = () => {
     const sortedPlayers = [...players].sort((a, b) => b.goals - a.goals);
     return (
       <div className="team">
-        <h5>{team} Team</h5>
+        <h5>
+          {t(team)} {t("Team")}
+        </h5>
         {sortedPlayers.map((playerObj) => (
           <div key={playerObj.player._id} className="player-info">
             <span className="player-name" title={playerObj.player.name}>
@@ -67,11 +75,13 @@ const MatchHistory = () => {
 
   return (
     <div className="container mt-4 unselectable">
-      <h2 className="mb-4">Match History</h2>
+      <h2 className="mb-4">{t("Match History")}</h2>
       <ul className="list-group">
         {matches.map((match) => (
           <li key={match._id} className="list-group-item">
-            <p>Date: {new Date(match.date).toLocaleDateString()}</p>
+            <p>
+              {t("Date")}: {new Date(match.date).toLocaleDateString()}
+            </p>
             <div className="teams">
               {renderTeam(
                 match.players.filter((p) => p.team === "White"),
@@ -82,7 +92,9 @@ const MatchHistory = () => {
                 "Black"
               )}
             </div>
-            <p>Result: {match.result}</p>
+            <p>
+              {t("Result")}: {match.result}
+            </p>
           </li>
         ))}
       </ul>

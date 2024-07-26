@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Container, Card, Form, Button, Image, Alert } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const Profile = () => {
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const [player, setPlayer] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,13 +29,13 @@ const Profile = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching player profile:", error);
-        setError("Failed to load profile. Please try again.");
+        setError(t("Failed to load profile. Please try again."));
         setLoading(false);
       }
     };
 
     fetchPlayerProfile();
-  }, [user.id]);
+  }, [user.id, t]);
 
   const handleSaveProfile = async () => {
     try {
@@ -48,7 +50,7 @@ const Profile = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save player profile");
+        throw new Error(t("Failed to save player profile"));
       }
 
       const data = await response.json();
@@ -57,14 +59,14 @@ const Profile = () => {
       setError("");
     } catch (error) {
       console.error("Error saving player profile:", error);
-      setError("Failed to save profile. Please try again.");
+      setError(t("Failed to save profile. Please try again."));
     }
   };
 
   if (loading) {
     return (
       <Container className="mt-4">
-        <Alert variant="info">Loading...</Alert>
+        <Alert variant="info">{t("Loading...")}</Alert>
       </Container>
     );
   }
@@ -73,32 +75,32 @@ const Profile = () => {
     <Container className="mt-4 unselectable">
       <Card>
         <Card.Header as="h2">
-          {player ? "Player Profile" : "Create Player Profile"}
+          {player ? t("Player Profile") : t("Create Player Profile")}
         </Card.Header>
         <Card.Body>
           {error && <Alert variant="danger">{error}</Alert>}
           {!player || isEditing ? (
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>Name</Form.Label>
+                <Form.Label>{t("Name")}</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter your name"
+                  placeholder={t("Enter your name")}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Avatar URL</Form.Label>
+                <Form.Label>{t("Avatar URL")}</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter avatar URL"
+                  placeholder={t("Enter avatar URL")}
                   value={avatar}
                   onChange={(e) => setAvatar(e.target.value)}
                 />
               </Form.Group>
               <Button variant="primary" onClick={handleSaveProfile}>
-                Save Profile
+                {t("Save Profile")}
               </Button>
               {isEditing && (
                 <Button
@@ -106,7 +108,7 @@ const Profile = () => {
                   className="ms-2"
                   onClick={() => setIsEditing(false)}
                 >
-                  Cancel
+                  {t("Cancel")}
                 </Button>
               )}
             </Form>
@@ -126,7 +128,7 @@ const Profile = () => {
                 />
               </Card.Text>
               <Button variant="primary" onClick={() => setIsEditing(true)}>
-                Edit Profile
+                {t("Edit Profile")}
               </Button>
             </>
           )}
