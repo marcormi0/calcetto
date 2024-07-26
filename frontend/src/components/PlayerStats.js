@@ -22,6 +22,21 @@ const PlayerStats = () => {
           throw new Error(t("Failed to fetch player statistics"));
         }
         const data = await response.json();
+
+        // Sort players by the criteria: matchesPlayed -> wins -> performance -> goals
+        data.sort((a, b) => {
+          if (a.stats.matchesPlayed !== b.stats.matchesPlayed) {
+            return b.stats.matchesPlayed - a.stats.matchesPlayed;
+          }
+          if (a.stats.wins !== b.stats.wins) {
+            return b.stats.wins - a.stats.wins;
+          }
+          if (a.performance !== b.performance) {
+            return b.performance - a.performance;
+          }
+          return b.stats.goals - a.stats.goals;
+        });
+
         setPlayers(data);
         setLoading(false);
       } catch (error) {

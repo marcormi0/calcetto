@@ -22,7 +22,7 @@ function calculatePerformance(ratings, stats) {
   const totalMatches = stats.wins + stats.losses + stats.draws;
   if (totalMatches === 0) return ratingAverage; // If no matches played, return rating-based performance
 
-  const winRate = stats.wins / totalMatches;
+  const winRate = (stats.wins + stats.draws / 2) / totalMatches;
   const goalsPerMatch = stats.goals / totalMatches;
   const assistsPerMatch = stats.assists / totalMatches;
 
