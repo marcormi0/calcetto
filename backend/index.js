@@ -1,11 +1,13 @@
+require("dotenv").config();
+require("./auth");
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const sendEmail = require("./utils/sendEmail");
 const passport = require("passport");
 const cors = require("cors"); // Import cors package
-require("dotenv").config();
-require("./auth");
 
 const User = require("./models/User");
 const playerRoutes = require("./routes/players");
@@ -38,7 +40,6 @@ app.use("/playerStats", playerStatsRoutes);
 //import matches routes
 app.use("/matches", matchesRoutes);
 
-//register route
 app.post("/register", async (req, res) => {
   const { email, password, name } = req.body;
 
@@ -49,21 +50,67 @@ app.post("/register", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = crypto.randomBytes(20).toString("hex");
 
     const newUser = new User({
       email,
       password: hashedPassword,
       name,
+      verificationToken,
+      verificationTokenExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+      isVerified: false,
     });
 
     await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
+
+    // Send verification email
+    const verificationLink = `http://localhost:3000/verify/${verificationToken}`;
+    const emailText = `Please click this link to verify your email: ${verificationLink}`;
+    const emailHtml = `<p>Please click this link to verify your email: <a href="${verificationLink}">${verificationLink}</a></p>`;
+
+    await sendEmail(email, "Verify Your Email", emailText, emailHtml);
+
+    res.status(201).json({
+      message:
+        "User registered successfully. Please check your email to verify your account.",
+    });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-//login route
+// Email verification route
+app.get("/verify/:token", async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired verification token" });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save();
+
+    res
+      .status(200)
+      .json({ message: "Email verified successfully. You can now log in." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Login route
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -73,12 +120,17 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    if (!user.isVerified) {
+      return res
+        .status(400)
+        .json({ message: "Please verify your email before logging in" });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Include the role in the JWT payload
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
@@ -88,22 +140,10 @@ app.post("/login", async (req, res) => {
     );
     res.json({ token });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 });
-
-app.get(
-  "/me",
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    try {
-      const user = await User.findById(req.user.id).select("-password");
-      res.json(user);
-    } catch (error) {
-      res.status(500).json({ message: "Server error" });
-    }
-  }
-);
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
