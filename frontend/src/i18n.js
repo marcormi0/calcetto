@@ -121,6 +121,10 @@ const resources = {
         "Il calcolo della performance di questo giocatore non è ancora affidabile in quanto si basa su troppe poche votazioni.",
       "Failed to fetch matches": "Recupero delle partite fallito",
       Error: "Errore",
+      "Are you one of these players? If not create your own! ":
+        "Sei uno di questi giocatori? Altrimenti crea il tuo! ",
+      "Create Profile": "Crea Profilo",
+      "This is me": "Sono io",
     },
   },
 };

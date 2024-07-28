@@ -17,7 +17,6 @@ const matchesRoutes = require("./routes/matches");
 const app = express();
 app.use(express.json());
 app.use(passport.initialize());
-app.use(cors());
 
 const corsOptions = {
   origin: "http://localhost:3001", // Replace with your frontend URL

@@ -16,7 +16,9 @@ router.post("/:id/vote/:userId", async (req, res) => {
 
     if (
       !match.players.some(
-        (playerObj) => playerObj.player.userId.toString() === userId
+        (playerObj) =>
+          playerObj.player.userId &&
+          playerObj.player.userId.toString() === userId
       )
     ) {
       return res.status(403).send("You did not participate in this match");

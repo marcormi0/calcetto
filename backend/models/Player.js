@@ -5,8 +5,11 @@ const PlayerSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
-    unique: true,
+    default: null,
+  },
+  isLinked: {
+    type: Boolean,
+    default: false,
   },
   name: {
     type: String,
@@ -14,34 +17,25 @@ const PlayerSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    defalt: "default-avatar.png",
+    default: "default-avatar.png",
   },
   stats: {
-    matchesPlayed: {
-      type: Number,
-      default: 0,
-    },
-    wins: {
-      type: Number,
-      default: 0,
-    },
-    losses: {
-      type: Number,
-      default: 0,
-    },
-    draws: {
-      type: Number,
-      default: 0,
-    },
-    goals: {
-      type: Number,
-      default: 0,
-    },
-    assists: {
-      type: Number,
-      default: 0,
-    },
+    matchesPlayed: { type: Number, default: 0 },
+    wins: { type: Number, default: 0 },
+    losses: { type: Number, default: 0 },
+    draws: { type: Number, default: 0 },
+    goals: { type: Number, default: 0 },
+    assists: { type: Number, default: 0 },
   },
 });
+
+// Compound index to ensure uniqueness only for linked players
+PlayerSchema.index(
+  { userId: 1, isLinked: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { isLinked: true },
+  }
+);
 
 module.exports = mongoose.model("Player", PlayerSchema);

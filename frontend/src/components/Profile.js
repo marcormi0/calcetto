@@ -21,7 +21,7 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
-        if (data) {
+        if (response.status !== 404 && data) {
           setPlayer(data);
           setName(data.name);
           setAvatar(data.avatar);
