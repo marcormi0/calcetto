@@ -125,6 +125,7 @@ const resources = {
         "Sei uno di questi giocatori? Altrimenti crea il tuo! ",
       "Create Profile": "Crea Profilo",
       "This is me": "Sono io",
+      "Go To Profile": "Vai al Profilo",
     },
   },
 };

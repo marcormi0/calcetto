@@ -1,0 +1,27 @@
+/* src/components/GenerateTeams.css */
+.unselectable {
+    user-select: none;
+  }
+
+  .list-group-item.active {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .alert {
+    margin-top: 20px;
+  }
+
+  .mt-3 {
+    margin-top: 1rem;
+  }
+
+  .mt-4 {
+    margin-top: 1.5rem;
+  }
+
+  /* Remove bullet points */
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }

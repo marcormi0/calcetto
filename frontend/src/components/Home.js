@@ -113,7 +113,6 @@ function Home() {
       <Container className="mt-4 unselectable">
         <h2>{t("Home")}</h2>
         <p>{t("Welcome to the Calcetto App!")}</p>
-        <p>{t("Your player profile is set up.")}</p>
         <Card>
           <Card.Body>
             <Card.Title>{currentPlayer.name}</Card.Title>
@@ -130,7 +129,7 @@ function Home() {
               />
             </Card.Text>
             <Button onClick={() => navigate("/profile")}>
-              {t("View Profile")}
+              {t("Go To Profile")}
             </Button>
           </Card.Body>
         </Card>
