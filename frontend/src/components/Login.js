@@ -2,21 +2,23 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { jwtDecode } from "jwt-decode"; // Correctly import jwt-decode
+import { jwtDecode } from "jwt-decode";
 import { Container, Card, Form, Button, Alert } from "react-bootstrap";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [isRegistering, setIsRegistering] = useState(false); // Toggle between login and register
+  const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState("");
-  const { setIsAuthenticated, setUser, setRole } = useContext(AuthContext); // Destructure setRole from context
+  const [success, setSuccess] = useState("");
+  const { setIsAuthenticated, setUser, setRole } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     const endpoint = isRegistering ? "/register" : "/login";
     const body = isRegistering
@@ -32,20 +34,31 @@ const Login = () => {
         body: JSON.stringify(body),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message);
+        throw new Error(data.message || "An error occurred");
       }
 
-      const data = await response.json();
-      const token = data.token;
-
-      localStorage.setItem("authToken", token);
-      const decoded = jwtDecode(token);
-      setIsAuthenticated(true);
-      setRole(decoded.role); // Set the role in context
-      setUser(decoded); // Set the user in context
-      navigate("/");
+      if (isRegistering) {
+        setSuccess(data.message);
+        setIsRegistering(false);
+        setEmail("");
+        setPassword("");
+        setName("");
+      } else {
+        // Only attempt to decode and store token for login
+        const token = data.token;
+        if (!token) {
+          throw new Error("No token received from server");
+        }
+        localStorage.setItem("authToken", token);
+        const decoded = jwtDecode(token);
+        setIsAuthenticated(true);
+        setRole(decoded.role);
+        setUser(decoded);
+        navigate("/");
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -59,6 +72,7 @@ const Login = () => {
         </Card.Header>
         <Card.Body>
           {error && <Alert variant="danger">{error}</Alert>}
+          {success && <Alert variant="success">{success}</Alert>}
           <Form onSubmit={handleSubmit}>
             {isRegistering && (
               <Form.Group className="mb-3">
@@ -99,7 +113,14 @@ const Login = () => {
           <Card.Text className="mt-3">
             <Button
               variant="link"
-              onClick={() => setIsRegistering(!isRegistering)}
+              onClick={() => {
+                setIsRegistering(!isRegistering);
+                setError("");
+                setSuccess("");
+                setEmail("");
+                setPassword("");
+                setName("");
+              }}
             >
               {isRegistering
                 ? "Already have an account? Login"

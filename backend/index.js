@@ -7,7 +7,6 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const sendEmail = require("./utils/sendEmail");
 const passport = require("passport");
-const cors = require("cors"); // Import cors package
 
 const User = require("./models/User");
 const playerRoutes = require("./routes/players");
@@ -18,12 +17,18 @@ const app = express();
 app.use(express.json());
 app.use(passport.initialize());
 
-const corsOptions = {
-  origin: "http://localhost:3001", // Replace with your frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-app.use(cors(corsOptions));
+if (process.env.NODE_ENV === "dev") {
+  const cors = require("cors");
+  const corsOptions = {
+    origin: "https://localhost:3001",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  };
+  app.use(cors(corsOptions));
+} else {
+  const path = require("path");
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+}
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -63,7 +68,11 @@ app.post("/register", async (req, res) => {
     await newUser.save();
 
     // Send verification email
-    const verificationLink = `http://localhost:3000/verify/${verificationToken}`;
+    const verificationLink = `${
+      process.env.NODE_ENV === "dev"
+        ? process.env.APP_DOMAIN_DEV
+        : process.env.APP_DOMAIN
+    }/verify/${verificationToken}`;
     const emailText = `Please click this link to verify your email: ${verificationLink}`;
     const emailHtml = `<p>Please click this link to verify your email: <a href="${verificationLink}">${verificationLink}</a></p>`;
 
@@ -144,6 +153,21 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
-});
+if (process.env.NODE_ENV === "dev") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+} else {
+  const https = require("https");
+  const fs = require("fs");
+  const options = {
+    key: fs.readFileSync(process.env.SSL_KEY_PATH),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH),
+  };
+
+  const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+  https.createServer(options, app).listen(HTTPS_PORT, () => {
+    console.log(`HTTPS Server running on port ${HTTPS_PORT}`);
+  });
+}

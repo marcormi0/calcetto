@@ -1,6 +1,5 @@
 // src/components/Register.js
 import React, { useState } from "react";
-import axios from "axios";
 import { Container, Card, Form, Button, Alert } from "react-bootstrap";
 
 const Register = () => {
@@ -16,10 +15,22 @@ const Register = () => {
     setSuccess("");
 
     try {
-      const res = await axios.post("/register", { email, password, name });
-      setSuccess(res.data.message);
+      const response = await fetch("/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, name }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error registering user");
+      }
+
+      const data = await response.json();
+      setSuccess(data.message);
     } catch (err) {
-      setError("Error registering user");
+      setError(err.message);
     }
   };
 
