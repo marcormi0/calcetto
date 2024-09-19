@@ -50,6 +50,7 @@ app.post("/register", async (req, res) => {
   try {
     let user = await User.findOne({ email });
     if (user) {
+      console.log(`Registration attempt with existing email: ${email}`);
       return res.status(400).json({ message: "User already exists" });
     }
 
@@ -78,12 +79,16 @@ app.post("/register", async (req, res) => {
 
     await sendEmail(email, "Verify Your Email", emailText, emailHtml);
 
+    console.log(
+      `Verification email sent to: ${email} at ${new Date().toISOString()}`
+    );
+
     res.status(201).json({
       message:
         "User registered successfully. Please check your email to verify your account.",
     });
   } catch (error) {
-    console.error(error);
+    console.error(`Error during registration: ${error.message}`);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -99,6 +104,7 @@ app.get("/verify/:token", async (req, res) => {
     });
 
     if (!user) {
+      console.log(`Invalid verification attempt with token: ${token}`);
       return res
         .status(400)
         .json({ message: "Invalid or expired verification token" });
@@ -109,11 +115,13 @@ app.get("/verify/:token", async (req, res) => {
     user.verificationTokenExpires = undefined;
     await user.save();
 
+    console.log(`User verified: ${user.email} at ${new Date().toISOString()}`);
+
     res
       .status(200)
       .json({ message: "Email verified successfully. You can now log in." });
   } catch (error) {
-    console.error(error);
+    console.error(`Error during email verification: ${error.message}`);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -125,10 +133,12 @@ app.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
+      console.log(`Failed login attempt for non-existent user: ${email}`);
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     if (!user.isVerified) {
+      console.log(`Login attempt by unverified user: ${email}`);
       return res
         .status(400)
         .json({ message: "Please verify your email before logging in" });
@@ -136,6 +146,9 @@ app.post("/login", async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log(
+        `Failed login attempt (incorrect password) for user: ${email}`
+      );
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
@@ -146,9 +159,12 @@ app.post("/login", async (req, res) => {
         expiresIn: "1h",
       }
     );
+
+    console.log(`User logged in: ${user.email} at ${new Date().toISOString()}`);
+
     res.json({ token });
   } catch (error) {
-    console.error(error);
+    console.error(`Error during login: ${error.message}`);
     res.status(500).json({ message: "Server error" });
   }
 });

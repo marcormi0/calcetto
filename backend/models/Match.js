@@ -51,6 +51,11 @@ const MatchSchema = new mongoose.Schema({
           },
         },
       ],
+      mvp: {
+        type: Schema.Types.ObjectId,
+        ref: "Player",
+        required: true,
+      },
     },
   ],
 });

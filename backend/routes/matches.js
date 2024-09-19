@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
 router.post("/:id/vote/:userId", async (req, res) => {
   const matchId = req.params.id;
   const userId = req.params.userId;
-  const { ratings } = req.body;
+  const { ratings, mvp } = req.body;
 
   try {
     const match = await Match.findById(matchId).populate("players.player");
@@ -28,18 +28,35 @@ router.post("/:id/vote/:userId", async (req, res) => {
       return res.status(403).send("You have already voted for this match");
     }
 
+    // Validate MVP
+    if (
+      !mvp ||
+      !match.players.some((player) => player.player._id.toString() === mvp)
+    ) {
+      return res.status(400).send("Invalid MVP selection");
+    }
+
     match.ratings.push({
       voter: userId,
       ratings: ratings.map((rating) => ({
         player: rating.player,
         rating: rating.rating,
       })),
+      mvp: mvp,
     });
 
+    // Update MVP count for the selected player
+    const mvpPlayer = await Player.findById(mvp);
+    if (mvpPlayer) {
+      mvpPlayer.stats.mvpCount = (mvpPlayer.stats.mvpCount || 0) + 1;
+      await mvpPlayer.save();
+    }
+
     await match.save();
-    res.send("Ratings submitted successfully");
+    res.send("Ratings and MVP submitted successfully");
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Error submitting vote:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 

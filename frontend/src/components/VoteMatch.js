@@ -8,6 +8,7 @@ const VoteMatch = () => {
   const { user } = useContext(AuthContext);
   const [match, setMatch] = useState(null);
   const [ratings, setRatings] = useState({});
+  const [mvp, setMvp] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -51,10 +52,19 @@ const VoteMatch = () => {
     }));
   };
 
+  const handleMvpSelection = (playerId) => {
+    setMvp(playerId);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    if (!mvp) {
+      setError(t("Please select an MVP before submitting"));
+      return;
+    }
 
     try {
       const token = localStorage.getItem("authToken");
@@ -69,6 +79,7 @@ const VoteMatch = () => {
             player,
             rating: Number(rating),
           })),
+          mvp,
         }),
       });
 
@@ -77,7 +88,7 @@ const VoteMatch = () => {
         throw new Error(data.message);
       }
 
-      setSuccess(t("Ratings submitted successfully"));
+      setSuccess(t("Ratings and MVP submitted successfully"));
     } catch (err) {
       setError(err.message);
     }
@@ -120,7 +131,7 @@ const VoteMatch = () => {
         {match.players.map(
           (playerObj) =>
             playerObj.player.userId !== user.id && (
-              <Form.Group key={playerObj.player._id}>
+              <Form.Group key={playerObj.player._id} className="mb-3">
                 <Form.Label>{playerObj.player.name}</Form.Label>
                 <div className="d-flex align-items-center">
                   <Form.Range
@@ -134,6 +145,18 @@ const VoteMatch = () => {
                   <span className="ms-2">
                     {ratings[playerObj.player._id] || 6}
                   </span>
+                  <Button
+                    variant={
+                      mvp === playerObj.player._id
+                        ? "primary"
+                        : "outline-primary"
+                    }
+                    size="sm"
+                    className="ms-3"
+                    onClick={() => handleMvpSelection(playerObj.player._id)}
+                  >
+                    {t("MVP")}
+                  </Button>
                 </div>
               </Form.Group>
             )

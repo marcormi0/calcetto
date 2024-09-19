@@ -28,13 +28,28 @@ router.get(
             )
           );
 
+          // Count MVP selections for this player
+          const mvpCount = matches.reduce((count, match) => {
+            return (
+              count +
+              match.ratings.filter(
+                (ratingGroup) =>
+                  ratingGroup.mvp &&
+                  ratingGroup.mvp.toString() === player._id.toString()
+              ).length
+            );
+          }, 0);
+
           const performance = calculatePerformance(allRatings, stats);
           const totalRatings = allRatings.length;
 
           return {
             name,
             avatar,
-            stats,
+            stats: {
+              ...stats,
+              mvpCount, // Add MVP count to stats
+            },
             performance,
             totalRatings,
           };

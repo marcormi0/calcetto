@@ -23,7 +23,7 @@ const PlayerStats = () => {
         }
         const data = await response.json();
 
-        // Sort players by the criteria: matchesPlayed -> wins -> performance -> goals
+        // Sort players by the criteria: matchesPlayed -> wins -> performance -> mvpCount -> goals
         data.sort((a, b) => {
           if (a.stats.matchesPlayed !== b.stats.matchesPlayed) {
             return b.stats.matchesPlayed - a.stats.matchesPlayed;
@@ -33,6 +33,9 @@ const PlayerStats = () => {
           }
           if (a.performance !== b.performance) {
             return b.performance - a.performance;
+          }
+          if (a.stats.mvpCount !== b.stats.mvpCount) {
+            return b.stats.mvpCount - a.stats.mvpCount;
           }
           return b.stats.goals - a.stats.goals;
         });
@@ -65,6 +68,7 @@ const PlayerStats = () => {
             <th>{t("Draws")}</th>
             <th>{t("Goals")}</th>
             <th>{t("Assists")}</th>
+            <th>{t("MVP")}</th>
             <th>{t("Performance")}</th>
           </tr>
         </thead>
@@ -78,6 +82,7 @@ const PlayerStats = () => {
               <td>{player.stats.draws}</td>
               <td>{player.stats.goals}</td>
               <td>{player.stats.assists}</td>
+              <td>{player.stats.mvpCount || 0}</td>
               <td>
                 <PerformanceCell player={player} />
               </td>
