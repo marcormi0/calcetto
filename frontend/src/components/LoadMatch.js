@@ -12,6 +12,7 @@ const LoadMatch = () => {
   const [players, setPlayers] = useState([]);
   const [teams, setTeams] = useState({});
   const [goals, setGoals] = useState({});
+  const [assists, setAssists] = useState({});
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -60,7 +61,14 @@ const LoadMatch = () => {
   const handleGoalsChange = (playerId, increment) => {
     setGoals((prevGoals) => ({
       ...prevGoals,
-      [playerId]: (prevGoals[playerId] || 0) + increment,
+      [playerId]: Math.max((prevGoals[playerId] || 0) + increment, 0),
+    }));
+  };
+
+  const handleAssistsChange = (playerId, increment) => {
+    setAssists((prevAssists) => ({
+      ...prevAssists,
+      [playerId]: Math.max((prevAssists[playerId] || 0) + increment, 0),
     }));
   };
 
@@ -94,6 +102,7 @@ const LoadMatch = () => {
       player,
       team: teams[player],
       goals: goals[player] || 0,
+      assists: assists[player] || 0,
     }));
 
     const result = calculateResult();
@@ -123,6 +132,7 @@ const LoadMatch = () => {
       setSelectedPlayers([]);
       setTeams({});
       setGoals({});
+      setAssists({});
     } catch (err) {
       setError(err.message);
     }
@@ -173,26 +183,52 @@ const LoadMatch = () => {
                     {player.name} ({t("Black")})
                   </div>
                   <div className="d-flex align-items-center">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => handleGoalsChange(player._id, -1)}
-                      disabled={
-                        !selectedPlayers.includes(player._id) ||
-                        (goals[player._id] || 0) <= 0
-                      }
-                    >
-                      -
-                    </button>
-                    <span className="mx-2">{goals[player._id] || 0}</span>
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => handleGoalsChange(player._id, 1)}
-                      disabled={!selectedPlayers.includes(player._id)}
-                    >
-                      +
-                    </button>
+                    <div className="mr-2">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => handleGoalsChange(player._id, -1)}
+                        disabled={
+                          !selectedPlayers.includes(player._id) ||
+                          (goals[player._id] || 0) <= 0
+                        }
+                      >
+                        -
+                      </button>
+                      <span className="mx-2">G: {goals[player._id] || 0}</span>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => handleGoalsChange(player._id, 1)}
+                        disabled={!selectedPlayers.includes(player._id)}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => handleAssistsChange(player._id, -1)}
+                        disabled={
+                          !selectedPlayers.includes(player._id) ||
+                          (assists[player._id] || 0) <= 0
+                        }
+                      >
+                        -
+                      </button>
+                      <span className="mx-2">
+                        A: {assists[player._id] || 0}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => handleAssistsChange(player._id, 1)}
+                        disabled={!selectedPlayers.includes(player._id)}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

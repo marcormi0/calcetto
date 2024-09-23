@@ -116,6 +116,7 @@ router.post("/load-match", adminAuth, async (req, res) => {
 
       player.stats.matchesPlayed += 1;
       player.stats.goals += playerData.goals;
+      player.stats.assists += playerData.assists;
 
       // Determine win/loss/draw
       if (playerData.team === "White") {
@@ -123,12 +124,16 @@ router.post("/load-match", adminAuth, async (req, res) => {
           player.stats.wins += 1;
         } else if (whiteGoals < blackGoals) {
           player.stats.losses += 1;
+        } else {
+          player.stats.draws += 1;
         }
       } else if (playerData.team === "Black") {
         if (blackGoals > whiteGoals) {
           player.stats.wins += 1;
         } else if (blackGoals < whiteGoals) {
           player.stats.losses += 1;
+        } else {
+          player.stats.draws += 1;
         }
       }
 
