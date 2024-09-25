@@ -19,15 +19,6 @@ const PlayerSchema = new mongoose.Schema({
     type: String,
     default: "default-avatar.png",
   },
-  stats: {
-    matchesPlayed: { type: Number, default: 0 },
-    wins: { type: Number, default: 0 },
-    losses: { type: Number, default: 0 },
-    draws: { type: Number, default: 0 },
-    goals: { type: Number, default: 0 },
-    assists: { type: Number, default: 0 },
-    mvpCount: { type: Number, default: 0 },
-  },
 });
 
 // Compound index to ensure uniqueness only for linked players

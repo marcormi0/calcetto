@@ -29,11 +29,10 @@ const VoteMatch = () => {
         const data = await response.json();
         setMatch(data);
 
-        // Initialize ratings with 1 for all players except the current user
         const initialRatings = {};
         data.players.forEach((playerObj) => {
           if (playerObj.player.userId !== user.id) {
-            initialRatings[playerObj.player._id] = "6";
+            initialRatings[playerObj.player._id] = 6;
           }
         });
         setRatings(initialRatings);
@@ -48,7 +47,7 @@ const VoteMatch = () => {
   const handleRatingChange = (playerId, rating) => {
     setRatings((prevRatings) => ({
       ...prevRatings,
-      [playerId]: rating,
+      [playerId]: parseFloat(rating),
     }));
   };
 
@@ -137,6 +136,7 @@ const VoteMatch = () => {
                   <Form.Range
                     min="1"
                     max="10"
+                    step="0.5"
                     value={ratings[playerObj.player._id] || 6}
                     onChange={(e) =>
                       handleRatingChange(playerObj.player._id, e.target.value)

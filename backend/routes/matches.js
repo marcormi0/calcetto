@@ -4,7 +4,6 @@ const Match = require("../models/Match");
 const passport = require("passport");
 const Player = require("../models/Player");
 const adminAuth = require("../middleware/auth");
-const mongoose = require("mongoose");
 
 router.post("/:id/vote/:userId", async (req, res) => {
   const matchId = req.params.id;
@@ -44,13 +43,6 @@ router.post("/:id/vote/:userId", async (req, res) => {
       })),
       mvp: mvp,
     });
-
-    // Update MVP count for the selected player
-    const mvpPlayer = await Player.findById(mvp);
-    if (mvpPlayer) {
-      mvpPlayer.stats.mvpCount = (mvpPlayer.stats.mvpCount || 0) + 1;
-      await mvpPlayer.save();
-    }
 
     await match.save();
     res.send("Ratings and MVP submitted successfully");
@@ -95,9 +87,6 @@ router.post("/load-match", adminAuth, async (req, res) => {
   const { date, players, result } = req.body;
 
   try {
-    // Parse the result
-    const [whiteGoals, blackGoals] = result.split("-").map(Number);
-
     // Create and save the new match
     const newMatch = new Match({
       date,
@@ -106,42 +95,8 @@ router.post("/load-match", adminAuth, async (req, res) => {
     });
     await newMatch.save();
 
-    // Update player stats
-    for (const playerData of players) {
-      const player = await Player.findById(playerData.player);
-      if (!player) {
-        console.warn(`Player with id ${playerData.player} not found`);
-        continue;
-      }
-
-      player.stats.matchesPlayed += 1;
-      player.stats.goals += playerData.goals;
-      player.stats.assists += playerData.assists;
-
-      // Determine win/loss/draw
-      if (playerData.team === "White") {
-        if (whiteGoals > blackGoals) {
-          player.stats.wins += 1;
-        } else if (whiteGoals < blackGoals) {
-          player.stats.losses += 1;
-        } else {
-          player.stats.draws += 1;
-        }
-      } else if (playerData.team === "Black") {
-        if (blackGoals > whiteGoals) {
-          player.stats.wins += 1;
-        } else if (blackGoals < whiteGoals) {
-          player.stats.losses += 1;
-        } else {
-          player.stats.draws += 1;
-        }
-      }
-
-      await player.save();
-    }
-
     res.status(201).json({
-      message: "Match information loaded and player stats updated successfully",
+      message: "Match information loaded successfully",
     });
   } catch (error) {
     console.error("Error loading match:", error);

@@ -23,6 +23,11 @@ const MatchSchema = new mongoose.Schema({
         required: true,
         default: 0,
       },
+      assists: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
     },
   ],
   result: {

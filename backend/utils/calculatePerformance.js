@@ -1,7 +1,5 @@
 // backend/utils/calculatePerformance.js
-
 function calculatePerformance(ratings, stats) {
-  //if (!ratings || ratings.length < 3) {
   if (!ratings) {
     return null; // Not enough ratings to calculate performance
   }
@@ -9,12 +7,11 @@ function calculatePerformance(ratings, stats) {
   // Calculate rating-based performance
   const sortedRatings = ratings.sort((a, b) => a - b);
   const outliersToRemove = Math.floor(ratings.length / 9);
-  let trimmedRatings;
-  if (outliersToRemove > 0 && ratings.length > 2 * outliersToRemove) {
-    trimmedRatings = sortedRatings.slice(outliersToRemove, -outliersToRemove);
-  } else {
-    trimmedRatings = sortedRatings;
-  }
+  const trimmedRatings =
+    outliersToRemove > 0 && ratings.length > 2 * outliersToRemove
+      ? sortedRatings.slice(outliersToRemove, -outliersToRemove)
+      : sortedRatings;
+
   const ratingSum = trimmedRatings.reduce((acc, rating) => acc + rating, 0);
   const ratingAverage = ratingSum / trimmedRatings.length;
 
