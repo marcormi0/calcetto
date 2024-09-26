@@ -9,10 +9,20 @@ const calculatePerformance = require("../utils/calculatePerformance");
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
-  async (_req, res) => {
+  async (req, res) => {
     try {
+      const { season } = req.query;
       const players = await Player.find().lean();
-      const matches = await Match.find().lean();
+
+      // Filter matches based on the selected season
+      let matchQuery = {};
+      if (season && season !== "all") {
+        const [startYear, endYear] = season.split("-");
+        const startDate = new Date(`${startYear}-09-01`); // Assuming season starts in September
+        const endDate = new Date(`${endYear}-08-31`); // Assuming season ends in August
+        matchQuery.date = { $gte: startDate, $lte: endDate };
+      }
+      const matches = await Match.find(matchQuery).lean();
 
       const playersWithStats = await Promise.all(
         players.map(async (player) => {
@@ -67,13 +77,10 @@ router.get(
             }
 
             // Count MVP selections for this player
-            if (
-              match.ratings.some(
-                (ratingGroup) => ratingGroup.mvp === player._id
-              )
-            ) {
-              stats.mvpCount++;
-            }
+            stats.mvpCount += match.ratings.filter(
+              (ratingGroup) =>
+                ratingGroup.mvp?.toString() === player._id.toString()
+            ).length;
           });
 
           // Get all ratings for this player
@@ -86,12 +93,12 @@ router.get(
           );
 
           const totalRatings = allRatings.length;
-          const performance = calculatePerformance(allRatings, stats); // Updated to remove direct reliance on stored stats
+          const performance = calculatePerformance(allRatings, stats);
 
           return {
             name: player.name,
             avatar: player.avatar,
-            stats, // Newly calculated stats
+            stats,
             performance,
             totalRatings,
           };

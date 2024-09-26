@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Container, Table, OverlayTrigger, Tooltip } from "react-bootstrap";
+import {
+  Container,
+  Table,
+  OverlayTrigger,
+  Tooltip,
+  Form,
+} from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./PlayerStats.css";
@@ -8,12 +14,20 @@ const PlayerStats = () => {
   const { t } = useTranslation();
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSeason, setSelectedSeason] = useState("all");
+
+  const seasons = [
+    { value: "all", label: t("All Seasons") },
+    { value: "2023-2024", label: "2023-2024" },
+    { value: "2024-2025", label: "2024-2025" },
+  ];
 
   useEffect(() => {
     const fetchPlayerStats = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem("authToken");
-        const response = await fetch("/playerStats", {
+        const response = await fetch(`/playerStats?season=${selectedSeason}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -49,7 +63,11 @@ const PlayerStats = () => {
     };
 
     fetchPlayerStats();
-  }, [t]);
+  }, [t, selectedSeason]);
+
+  const handleSeasonChange = (event) => {
+    setSelectedSeason(event.target.value);
+  };
 
   if (loading) {
     return <div>{t("Loading player statistics...")}</div>;
@@ -58,6 +76,16 @@ const PlayerStats = () => {
   return (
     <Container className="unselectable">
       <h2 className="mt-4 mb-3">{t("Player Stats")}</h2>
+      <Form.Group className="mb-3">
+        <Form.Label>{t("Select Season")}</Form.Label>
+        <Form.Select value={selectedSeason} onChange={handleSeasonChange}>
+          {seasons.map((season) => (
+            <option key={season.value} value={season.value}>
+              {season.label}
+            </option>
+          ))}
+        </Form.Select>
+      </Form.Group>
       <Table striped bordered hover>
         <thead>
           <tr>
