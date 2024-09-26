@@ -68,7 +68,7 @@ router.get(
   }
 );
 
-// Create a new player
+// Create or update a player
 router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
@@ -77,24 +77,31 @@ router.post(
     const userId = req.user.id;
 
     try {
-      const existingPlayer = await Player.findOne({ userId, isLinked: true });
-      if (existingPlayer) {
-        return res
-          .status(400)
-          .json({ message: "Player already exists for this user" });
+      let player = await Player.findOne({ userId });
+
+      if (player) {
+        // Player exists, update their information
+        player.name = name;
+        player.avatar = avatar;
+        await player.save();
+        return res.json(player);
+      } else {
+        // Player doesn't exist, create a new one
+        const newPlayer = new Player({
+          userId,
+          isLinked: true,
+          name,
+          avatar,
+        });
+
+        await newPlayer.save();
+        return res.status(201).json(newPlayer);
       }
-
-      const newPlayer = new Player({
-        userId,
-        isLinked: true,
-        name,
-        avatar,
-      });
-
-      await newPlayer.save();
-      res.status(201).json(newPlayer);
     } catch (error) {
-      res.status(500).json({ message: "Server error" });
+      console.error("Error creating/updating player:", error);
+      res
+        .status(500)
+        .json({ message: "Server error", error: error.toString() });
     }
   }
 );

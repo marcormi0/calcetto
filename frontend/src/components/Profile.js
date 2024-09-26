@@ -1,7 +1,25 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { Container, Card, Form, Button, Image, Alert } from "react-bootstrap";
+import {
+  Container,
+  Card,
+  Form,
+  Button,
+  Image,
+  Alert,
+  Row,
+  Col,
+} from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+
+const avatarOptions = [
+  "/avatars/default-avatar.png",
+  "/avatars/avatar2.png",
+  "/avatars/avatar3.png",
+  "/avatars/avatar4.png",
+  "/avatars/avatar5.png",
+  "/avatars/avatar6.png",
+];
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -9,7 +27,7 @@ const Profile = () => {
   const [player, setPlayer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
-  const [avatar, setAvatar] = useState("");
+  const [avatar, setAvatar] = useState(avatarOptions[0]);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState("");
 
@@ -24,7 +42,7 @@ const Profile = () => {
         if (response.status !== 404 && data) {
           setPlayer(data);
           setName(data.name);
-          setAvatar(data.avatar);
+          setAvatar(data.avatar || avatarOptions[0]);
         }
         setLoading(false);
       } catch (error) {
@@ -63,6 +81,33 @@ const Profile = () => {
     }
   };
 
+  const AvatarSelector = () => (
+    <Form.Group className="mb-3">
+      <Form.Label>{t("Select Avatar")}</Form.Label>
+      <Row className="g-2">
+        {avatarOptions.map((avatarSrc, index) => (
+          <Col key={index} xs={4} sm={3} md={2}>
+            <Image
+              src={avatarSrc}
+              alt={`Avatar ${index + 1}`}
+              rounded
+              className={`avatar-option ${
+                avatar === avatarSrc ? "selected" : ""
+              }`}
+              style={{
+                width: "100%",
+                height: "auto",
+                cursor: "pointer",
+                border: avatar === avatarSrc ? "3px solid #007bff" : "none",
+              }}
+              onClick={() => setAvatar(avatarSrc)}
+            />
+          </Col>
+        ))}
+      </Row>
+    </Form.Group>
+  );
+
   if (loading) {
     return (
       <Container className="mt-4">
@@ -90,15 +135,7 @@ const Profile = () => {
                   onChange={(e) => setName(e.target.value)}
                 />
               </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>{t("Avatar URL")}</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder={t("Enter avatar URL")}
-                  value={avatar}
-                  onChange={(e) => setAvatar(e.target.value)}
-                />
-              </Form.Group>
+              <AvatarSelector />
               <Button variant="primary" onClick={handleSaveProfile}>
                 {t("Save Profile")}
               </Button>
@@ -117,7 +154,7 @@ const Profile = () => {
               <Card.Title>{player.name}</Card.Title>
               <Card.Text>
                 <Image
-                  src={player.avatar || "default-avatar.png"}
+                  src={player.avatar || avatarOptions[0]}
                   alt="Avatar"
                   roundedCircle
                   style={{

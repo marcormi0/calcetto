@@ -105,7 +105,9 @@ const VoteMatch = () => {
     );
   }
 
-  if (match.ratings.some((rating) => rating.voter === user.id)) {
+  const hasUserVoted = match.ratings.some((rating) => rating.voter === user.id);
+
+  if (hasUserVoted) {
     return (
       <Card className="container mt-4">
         <Card.Body>
@@ -114,7 +116,21 @@ const VoteMatch = () => {
             {t("Date")}: {new Date(match.date).toLocaleDateString()}
             <br />
             {t("Players")}:{" "}
-            {match.players.map((playerObj) => playerObj.player.name).join(", ")}
+            {match.players.map((playerObj) => (
+              <span
+                key={playerObj.player._id}
+                className={
+                  match.ratings.some(
+                    (rating) => rating.voter === playerObj.player.userId
+                  )
+                    ? "text-success"
+                    : ""
+                }
+              >
+                {playerObj.player.name}
+                {playerObj !== match.players[match.players.length - 1] && ", "}
+              </span>
+            ))}
             <br />
             {t("Result")}: {match.result}
           </Card.Text>
