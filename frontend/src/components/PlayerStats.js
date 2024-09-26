@@ -14,13 +14,26 @@ const PlayerStats = () => {
   const { t } = useTranslation();
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSeason, setSelectedSeason] = useState("all");
+  const [selectedSeason, setSelectedSeason] = useState(getCurrentSeason());
 
   const seasons = [
     { value: "all", label: t("All Seasons") },
     { value: "2023-2024", label: "2023-2024" },
     { value: "2024-2025", label: "2024-2025" },
   ];
+
+  function getCurrentSeason() {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+
+    // Assuming the season starts in September
+    if (currentMonth >= 9) {
+      return `${currentYear}-${currentYear + 1}`;
+    } else {
+      return `${currentYear - 1}-${currentYear}`;
+    }
+  }
 
   useEffect(() => {
     const fetchPlayerStats = async () => {

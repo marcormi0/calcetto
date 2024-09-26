@@ -6,20 +6,33 @@ const Match = require("../models/Match");
 const passport = require("passport");
 const calculatePerformance = require("../utils/calculatePerformance");
 
+function getCurrentSeason() {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+
+  // Assuming the season starts in September
+  if (currentMonth >= 9) {
+    return `${currentYear}-${currentYear + 1}`;
+  } else {
+    return `${currentYear - 1}-${currentYear}`;
+  }
+}
+
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
-      const { season } = req.query;
+      const { season = getCurrentSeason() } = req.query;
       const players = await Player.find().lean();
 
       // Filter matches based on the selected season
       let matchQuery = {};
       if (season && season !== "all") {
         const [startYear, endYear] = season.split("-");
-        const startDate = new Date(`${startYear}-09-01`); // Assuming season starts in September
-        const endDate = new Date(`${endYear}-08-31`); // Assuming season ends in August
+        const startDate = new Date(`${startYear}-09-01`); // season starts in September
+        const endDate = new Date(`${endYear}-08-31`); // season ends in August
         matchQuery.date = { $gte: startDate, $lte: endDate };
       }
       const matches = await Match.find(matchQuery).lean();
