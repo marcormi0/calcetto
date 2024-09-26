@@ -5,8 +5,10 @@ import {
   OverlayTrigger,
   Tooltip,
   Form,
+  Button,
 } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { Info } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./PlayerStats.css";
 
@@ -25,14 +27,11 @@ const PlayerStats = () => {
   function getCurrentSeason() {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+    const currentMonth = currentDate.getMonth() + 1;
 
-    // Assuming the season starts in September
-    if (currentMonth >= 9) {
-      return `${currentYear}-${currentYear + 1}`;
-    } else {
-      return `${currentYear - 1}-${currentYear}`;
-    }
+    return currentMonth >= 9
+      ? `${currentYear}-${currentYear + 1}`
+      : `${currentYear - 1}-${currentYear}`;
   }
 
   useEffect(() => {
@@ -50,7 +49,6 @@ const PlayerStats = () => {
         }
         const data = await response.json();
 
-        // Sort players by the criteria: matchesPlayed -> wins -> performance -> mvpCount -> goals
         data.sort((a, b) => {
           if (a.stats.matchesPlayed !== b.stats.matchesPlayed) {
             return b.stats.matchesPlayed - a.stats.matchesPlayed;
@@ -124,7 +122,7 @@ const PlayerStats = () => {
               <td>{player.stats.goals}</td>
               <td>{player.stats.assists}</td>
               <td>{player.stats.mvpCount || 0}</td>
-              <td>
+              <td className="text-center">
                 <PerformanceCell player={player} />
               </td>
             </tr>
@@ -143,27 +141,38 @@ const PerformanceCell = ({ player }) => {
   }
 
   const performanceDisplay = <span>{player.performance.toFixed(2)}</span>;
+  const voteAverage = (player.voteSum / player.totalRatings).toFixed(2);
 
-  if (player.totalRatings < 30) {
-    return (
-      <OverlayTrigger
-        placement="top"
-        overlay={
-          <Tooltip id={`tooltip-${player.name}`}>
-            {t(
-              "The performance calculation for this player is not yet reliable as it is based on too few ratings."
-            )}
-          </Tooltip>
-        }
-      >
-        <span>
-          {performanceDisplay} <span className="text-warning">?</span>
-        </span>
+  const infoTooltip = (
+    <Tooltip id={`tooltip-${player.name}-info`}>
+      {t("Average vote: {{voteAverage}}", { voteAverage })}
+    </Tooltip>
+  );
+
+  return (
+    <div className="d-flex justify-content-center align-items-center">
+      {performanceDisplay}
+      {player.totalRatings < 30 && (
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <Tooltip id={`tooltip-${player.name}`}>
+              {t(
+                "The performance calculation for this player is not yet reliable as it is based on too few ratings."
+              )}
+            </Tooltip>
+          }
+        >
+          <span className="ms-1 text-warning">?</span>
+        </OverlayTrigger>
+      )}
+      <OverlayTrigger placement="top" overlay={infoTooltip}>
+        <Button variant="link" className="p-0 ms-2" style={{ lineHeight: 1 }}>
+          <Info size={16} />
+        </Button>
       </OverlayTrigger>
-    );
-  }
-
-  return performanceDisplay;
+    </div>
+  );
 };
 
 export default PlayerStats;

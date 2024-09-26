@@ -107,6 +107,7 @@ router.get(
 
           const totalRatings = allRatings.length;
           const performance = calculatePerformance(allRatings, stats);
+          const voteSum = allRatings.reduce((sum, rating) => sum + rating, 0);
 
           return {
             name: player.name,
@@ -114,6 +115,7 @@ router.get(
             stats,
             performance,
             totalRatings,
+            voteSum,
           };
         })
       );

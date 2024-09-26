@@ -126,6 +126,10 @@ const resources = {
       "Create Profile": "Crea Profilo",
       "This is me": "Sono io",
       "Go To Profile": "Vai al Profilo",
+      "Select Season": "Seleziona la stagione",
+      "All Seasons": "Tutte le stagioni",
+      "Generate Teams": "Genera Squadre",
+      "Average vote: {{voteAverage}}": "Media voti: {{voteAverage}}",
     },
   },
 };
