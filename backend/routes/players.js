@@ -73,7 +73,7 @@ router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    const { name, avatar } = req.body;
+    const { name, avatar, accessories, flag } = req.body;
     const userId = req.user.id;
 
     try {
@@ -83,6 +83,8 @@ router.post(
         // Player exists, update their information
         player.name = name;
         player.avatar = avatar;
+        player.accessories = accessories;
+        player.flag = flag;
         await player.save();
         return res.json(player);
       } else {
@@ -92,6 +94,7 @@ router.post(
           isLinked: true,
           name,
           avatar,
+          accessories,
         });
 
         await newPlayer.save();

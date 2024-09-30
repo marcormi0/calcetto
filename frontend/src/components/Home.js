@@ -117,16 +117,57 @@ function Home() {
           <Card.Body>
             <Card.Title>{currentPlayer.name}</Card.Title>
             <Card.Text>
-              <img
-                src={currentPlayer.avatar || "avatars/default-avatar.png"}
-                alt="Avatar"
+              <div
                 style={{
+                  position: "relative",
                   width: "100px",
                   height: "100px",
-                  objectFit: "cover",
-                  borderRadius: "50%",
+                  margin: "0 auto", // Centers the component horizontally
                 }}
-              />
+              >
+                {currentPlayer.flag && (
+                  <img
+                    src={currentPlayer.flag}
+                    alt="Flag"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      zIndex: 1, // Lower z-index for background flag
+                    }}
+                  />
+                )}
+                <img
+                  src={currentPlayer.avatar || "avatars/default-avatar.png"}
+                  alt="Avatar"
+                  style={{
+                    position: "relative",
+                    width: "100px",
+                    height: "100px",
+                    objectFit: "cover",
+                    zIndex: 2,
+                  }}
+                />
+                {currentPlayer.accessories.map((accSrc, index) => (
+                  <img
+                    key={index}
+                    src={accSrc}
+                    alt="Accessory"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      zIndex: 3,
+                    }}
+                  />
+                ))}
+              </div>
             </Card.Text>
             <Button onClick={() => navigate("/profile")}>
               {t("Go To Profile")}

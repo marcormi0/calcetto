@@ -19,6 +19,14 @@ const PlayerSchema = new mongoose.Schema({
     type: String,
     default: "default-avatar.png",
   },
+  accessories: {
+    type: [String],
+    default: [],
+  },
+  flag: {
+    type: String,
+    default: null,
+  },
 });
 
 // Compound index to ensure uniqueness only for linked players

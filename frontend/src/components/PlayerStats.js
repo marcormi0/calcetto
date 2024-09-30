@@ -4,6 +4,7 @@ import {
   Table,
   OverlayTrigger,
   Tooltip,
+  Popover,
   Form,
   Button,
 } from "react-bootstrap";
@@ -114,7 +115,21 @@ const PlayerStats = () => {
         <tbody>
           {players.map((player, index) => (
             <tr key={index}>
-              <td>{player.name}</td>
+              <td>
+                <OverlayTrigger
+                  trigger={["hover", "focus"]}
+                  placement="top"
+                  overlay={
+                    <Popover id={`popover-${player.name}`}>
+                      <Popover.Body>
+                        <AvatarTooltip player={player} />
+                      </Popover.Body>
+                    </Popover>
+                  }
+                >
+                  <span>{player.name}</span>
+                </OverlayTrigger>
+              </td>
               <td>{player.stats.matchesPlayed}</td>
               <td>{player.stats.wins}</td>
               <td>{player.stats.losses}</td>
@@ -130,6 +145,68 @@ const PlayerStats = () => {
         </tbody>
       </Table>
     </Container>
+  );
+};
+
+// Popover Component for Avatar Preview
+const AvatarTooltip = ({ player }) => {
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: "100px",
+        height: "100px",
+        borderRadius: "10px",
+        overflow: "hidden",
+        backgroundColor: "#f8f9fa",
+        border: "1px solid #dee2e6",
+      }}
+    >
+      {/* Conditionally render the flag image only if player.flag is not null */}
+      {player.flag && (
+        <img
+          src={player.flag}
+          alt="Flag"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            zIndex: 1,
+          }}
+        />
+      )}
+      <img
+        src={player.avatar || "avatars/default-avatar.png"}
+        alt="Avatar"
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          zIndex: 2,
+        }}
+      />
+      {player.accessories &&
+        player.accessories.map((accSrc, index) => (
+          <img
+            key={index}
+            src={accSrc}
+            alt="Accessory"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              zIndex: 3,
+            }}
+          />
+        ))}
+    </div>
   );
 };
 

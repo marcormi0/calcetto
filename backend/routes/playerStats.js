@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const Player = require("../models/Player");
 const Match = require("../models/Match");
+const User = require("../models/User");
 const passport = require("passport");
 const calculatePerformance = require("../utils/calculatePerformance");
 
@@ -18,6 +19,103 @@ function getCurrentSeason() {
     return `${currentYear - 1}-${currentYear}`;
   }
 }
+
+router.get(
+  "/:userId",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { season = getCurrentSeason() } = req.query;
+
+      // Find the player associated with the user
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const player = await Player.findOne({ userId: userId }).lean();
+      if (!player) {
+        return res
+          .status(404)
+          .json({ message: "Player not found for this user" });
+      }
+
+      let matchQuery = { "players.player": player._id };
+      if (season && season !== "all") {
+        const [startYear, endYear] = season.split("-");
+        const startDate = new Date(`${startYear}-09-01`);
+        const endDate = new Date(`${endYear}-08-31`);
+        matchQuery.date = { $gte: startDate, $lte: endDate };
+      }
+
+      const matches = await Match.find(matchQuery).lean();
+
+      const stats = {
+        matchesPlayed: matches.length,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        goals: 0,
+        assists: 0,
+        mvpCount: 0,
+      };
+
+      matches.forEach((match) => {
+        const playerData = match.players.find(
+          (p) => p.player.toString() === player._id.toString()
+        );
+
+        stats.goals += playerData.goals || 0;
+        stats.assists += playerData.assists || 0;
+
+        const [whiteScore, blackScore] = match.result.split("-").map(Number);
+
+        if (playerData.team === "White") {
+          if (whiteScore > blackScore) stats.wins++;
+          else if (whiteScore < blackScore) stats.losses++;
+          else stats.draws++;
+        } else if (playerData.team === "Black") {
+          if (blackScore > whiteScore) stats.wins++;
+          else if (blackScore < whiteScore) stats.losses++;
+          else stats.draws++;
+        }
+
+        stats.mvpCount += match.ratings.filter(
+          (ratingGroup) => ratingGroup.mvp?.toString() === player._id.toString()
+        ).length;
+      });
+
+      const allRatings = matches.flatMap((match) =>
+        match.ratings.flatMap((ratingGroup) =>
+          ratingGroup.ratings
+            .filter((r) => r.player.toString() === player._id.toString())
+            .map((r) => r.rating)
+        )
+      );
+
+      const totalRatings = allRatings.length;
+      const performance = calculatePerformance(allRatings, stats);
+      const voteSum = allRatings.reduce((sum, rating) => sum + rating, 0);
+
+      const playerStats = {
+        name: player.name,
+        avatar: player.avatar,
+        accessories: player.accessories,
+        flag: player.flag,
+        stats,
+        performance,
+        totalRatings,
+        voteSum,
+      };
+
+      res.json(playerStats);
+    } catch (error) {
+      console.error("Error fetching player statistics:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
 
 router.get(
   "/",
@@ -112,6 +210,8 @@ router.get(
           return {
             name: player.name,
             avatar: player.avatar,
+            accessories: player.accessories,
+            flag: player.flag,
             stats,
             performance,
             totalRatings,

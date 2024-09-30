@@ -10,7 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import Home from "./components/Home";
 import MatchHistory from "./components/MatchHistory";
-import Profile from "./components/Profile";
+import Profile from "./components/profile/Profile";
 import PlayerStats from "./components/PlayerStats";
 import VoteMatch from "./components/VoteMatch";
 import Register from "./components/Register";
