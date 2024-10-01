@@ -18,6 +18,8 @@ const PlayerStats = () => {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSeason, setSelectedSeason] = useState(getCurrentSeason());
+  const [highestMvpCount, setHighestMvpCount] = useState(0);
+  const [mvpTie, setMvpTie] = useState(false);
 
   const seasons = [
     { value: "all", label: t("All Seasons") },
@@ -34,6 +36,15 @@ const PlayerStats = () => {
       ? `${currentYear}-${currentYear + 1}`
       : `${currentYear - 1}-${currentYear}`;
   }
+
+  useEffect(() => {
+    if (players.length > 0) {
+      const mvpCounts = players.map((player) => player.stats.mvpCount || 0);
+      const maxMvp = Math.max(...mvpCounts);
+      setHighestMvpCount(maxMvp);
+      setMvpTie(mvpCounts.filter((count) => count === maxMvp).length > 1);
+    }
+  }, [players]);
 
   useEffect(() => {
     const fetchPlayerStats = async () => {
@@ -122,7 +133,14 @@ const PlayerStats = () => {
                   overlay={
                     <Popover id={`popover-${player.name}`}>
                       <Popover.Body>
-                        <AvatarTooltip player={player} />
+                        <AvatarTooltip
+                          player={player}
+                          isMvp={
+                            player.stats.mvpCount === highestMvpCount &&
+                            highestMvpCount > 0
+                          }
+                          mvpTie={mvpTie}
+                        />{" "}
                       </Popover.Body>
                     </Popover>
                   }
@@ -149,63 +167,87 @@ const PlayerStats = () => {
 };
 
 // Popover Component for Avatar Preview
-const AvatarTooltip = ({ player }) => {
+const AvatarTooltip = ({ player, isMvp, mvpTie }) => {
+  const { t } = useTranslation();
+
   return (
-    <div
-      style={{
-        position: "relative",
-        width: "100px",
-        height: "100px",
-        borderRadius: "10px",
-        overflow: "hidden",
-        backgroundColor: "#f8f9fa",
-        border: "1px solid #dee2e6",
-      }}
-    >
-      {/* Conditionally render the flag image only if player.flag is not null */}
-      {player.flag && (
-        <img
-          src={player.flag}
-          alt="Flag"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            zIndex: 1,
-          }}
-        />
-      )}
-      <img
-        src={player.avatar || "avatars/default-avatar.png"}
-        alt="Avatar"
+    <div style={{ position: "relative" }}>
+      <div
         style={{
           position: "relative",
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          zIndex: 2,
+          width: "100px",
+          height: "100px",
+          borderRadius: "10px",
+          overflow: "hidden",
+          backgroundColor: "#f8f9fa",
+          border: "1px solid #dee2e6",
         }}
-      />
-      {player.accessories &&
-        player.accessories.map((accSrc, index) => (
+      >
+        {player.flag && (
           <img
-            key={index}
-            src={accSrc}
-            alt="Accessory"
+            src={player.flag}
+            alt="Flag"
             style={{
               position: "absolute",
               top: 0,
               left: 0,
               width: "100%",
               height: "100%",
-              objectFit: "contain",
-              zIndex: 3,
+              objectFit: "cover",
+              zIndex: 1,
             }}
           />
-        ))}
+        )}
+        <img
+          src={player.avatar || "avatars/default-avatar.png"}
+          alt="Avatar"
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            zIndex: 2,
+          }}
+        />
+        {player.accessories &&
+          player.accessories.map((accSrc, index) => (
+            <img
+              key={index}
+              src={accSrc}
+              alt="Accessory"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+                zIndex: 3,
+              }}
+            />
+          ))}
+      </div>
+      {isMvp && !mvpTie && (
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <Tooltip id={`tooltip-mvp-${player.name}`}>{t("MVP")}</Tooltip>
+          }
+        >
+          <img
+            src={"accessories/mvp.png"}
+            alt="MVP"
+            style={{
+              width: "40%",
+              height: "40%",
+              position: "absolute",
+              right: "-15px",
+              top: "-15px",
+              zIndex: 4,
+            }}
+          />
+        </OverlayTrigger>
+      )}
     </div>
   );
 };
