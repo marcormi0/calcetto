@@ -1,63 +1,42 @@
-// src/components/LanguageSelector.js
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import Flag from "react-flagkit";
-import "./LanguageSelector.css";
 
 const LanguageSelector = () => {
   const { i18n } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
 
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-    setIsOpen(false);
+  const languages = [
+    { code: "en", country: "US", name: "English" },
+    { code: "it", country: "IT", name: "Italiano" },
+    // Add more languages here if needed
+  ];
+
+  const changeLanguage = () => {
+    const currentIndex = languages.findIndex(
+      (lang) => lang.code === i18n.language
+    );
+    const nextIndex = (currentIndex + 1) % languages.length;
+    i18n.changeLanguage(languages[nextIndex].code);
   };
 
-  const getCurrentFlag = () => {
-    return i18n.language === "en" ? "US" : "IT";
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const currentLang =
+    languages.find((lang) => lang.code === i18n.language) || languages[0];
 
   return (
-    <div className="language-selector" ref={dropdownRef}>
-      <button className="language-toggle" onClick={() => setIsOpen(!isOpen)}>
-        <Flag
-          country={getCurrentFlag()}
-          style={{ width: "20px", height: "20px" }}
-        />
-      </button>
-      {isOpen && (
-        <div className="language-dropdown">
-          <button
-            onClick={() => changeLanguage("en")}
-            className="language-option"
-          >
-            <Flag country="US" style={{ width: "20px", height: "20px" }} />
-            <span>English</span>
-          </button>
-          <button
-            onClick={() => changeLanguage("it")}
-            className="language-option"
-          >
-            <Flag country="IT" style={{ width: "20px", height: "20px" }} />
-            <span>Italiano</span>
-          </button>
-        </div>
-      )}
-    </div>
+    <button
+      onClick={changeLanguage}
+      style={{
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        padding: 0,
+      }}
+    >
+      <Flag
+        country={currentLang.country}
+        style={{ width: "20px", height: "20px" }}
+      />
+    </button>
   );
 };
 

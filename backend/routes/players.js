@@ -81,27 +81,44 @@ router.post(
 
       if (player) {
         // Player exists, update their information
+        console.log(`Updating player with userId: ${userId}`);
+        console.log("Previous player data:", JSON.stringify(player));
+
         player.name = name;
         player.avatar = avatar;
         player.accessories = accessories;
         player.flag = flag;
         await player.save();
+
+        console.log("Updated player data:", JSON.stringify(player));
+        console.log(`Player updated successfully for userId: ${userId}`);
+
         return res.json(player);
       } else {
         // Player doesn't exist, create a new one
+        console.log(`Creating new player for userId: ${userId}`);
+
         const newPlayer = new Player({
           userId,
           isLinked: true,
           name,
           avatar,
           accessories,
+          flag,
         });
 
         await newPlayer.save();
+
+        console.log("New player created:", JSON.stringify(newPlayer));
+        console.log(`Player created successfully for userId: ${userId}`);
+
         return res.status(201).json(newPlayer);
       }
     } catch (error) {
-      console.error("Error creating/updating player:", error);
+      console.error(
+        `Error creating/updating player for userId: ${userId}`,
+        error
+      );
       res
         .status(500)
         .json({ message: "Server error", error: error.toString() });

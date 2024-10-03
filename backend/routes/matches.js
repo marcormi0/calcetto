@@ -45,6 +45,8 @@ router.post("/:id/vote/:userId", async (req, res) => {
     });
 
     await match.save();
+
+    console.log(`Player with userId: ${userId} submitted their ratings`);
     res.send("Ratings and MVP submitted successfully");
   } catch (error) {
     console.error("Error submitting vote:", error);

@@ -158,7 +158,7 @@ const GenerateTeams = () => {
         <div className="row">
           <div className="col-md-6">
             <h3>
-              {t("Team 1")} (Total Performance:{" "}
+              {t("Team 1")} ({t("Total Performance:")}{" "}
               {teams.team1.totalPerformance.toFixed(2)})
             </h3>
             <ul className="list-group">
@@ -172,7 +172,7 @@ const GenerateTeams = () => {
           </div>
           <div className="col-md-6">
             <h3>
-              {t("Team 2")} (Total Performance:{" "}
+              {t("Team 2")} ({t("Total Performance:")}{" "}
               {teams.team2.totalPerformance.toFixed(2)})
             </h3>
             <ul className="list-group">
