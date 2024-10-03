@@ -175,8 +175,8 @@ const AvatarTooltip = ({ player, isMvp, mvpTie }) => {
       <div
         style={{
           position: "relative",
-          width: "100px",
-          height: "100px",
+          width: "100%",
+          height: "100%",
           borderRadius: "10px",
           overflow: "hidden",
           backgroundColor: "#f8f9fa",

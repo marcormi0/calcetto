@@ -197,7 +197,7 @@ function Home() {
                   <Card.Title>{player.name}</Card.Title>
                   <Card.Text>
                     <img
-                      src={player.avatar || "default-avatar.png"}
+                      src={player.avatar || "avatars/default-avatar.png"}
                       alt="Avatar"
                       style={{
                         width: "50px",

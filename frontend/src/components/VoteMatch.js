@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Form, Button, Alert, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -11,38 +11,42 @@ const VoteMatch = () => {
   const [mvp, setMvp] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchLastMatch = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem("authToken");
+      const response = await fetch("/matches/last", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(t("Error fetching the last match"));
+      }
+
+      const data = await response.json();
+      setMatch(data);
+
+      const initialRatings = {};
+      data.players.forEach((playerObj) => {
+        if (playerObj.player.userId !== user.id) {
+          initialRatings[playerObj.player._id] = 6;
+        }
+      });
+      setRatings(initialRatings);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [t, user.id]);
 
   useEffect(() => {
-    const fetchLastMatch = async () => {
-      try {
-        const token = localStorage.getItem("authToken");
-        const response = await fetch("/matches/last", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          setError(t("Error fetching the last match"));
-        }
-
-        const data = await response.json();
-        setMatch(data);
-
-        const initialRatings = {};
-        data.players.forEach((playerObj) => {
-          if (playerObj.player.userId !== user.id) {
-            initialRatings[playerObj.player._id] = 6;
-          }
-        });
-        setRatings(initialRatings);
-      } catch (err) {
-        setError("Error fetching the last match");
-      }
-    };
-
     fetchLastMatch();
-  }, [t, user.id]);
+  }, [fetchLastMatch]);
 
   const handleRatingChange = (playerId, rating) => {
     setRatings((prevRatings) => ({
@@ -88,30 +92,74 @@ const VoteMatch = () => {
       }
 
       setSuccess(t("Ratings and MVP submitted successfully"));
+      // Reload the match data to reflect the new state
+      await fetchLastMatch();
     } catch (err) {
       setError(err.message);
     }
   };
 
-  if (!match) {
+  if (isLoading) {
     return <div className="container mt-4">{t("Loading...")}</div>;
+  }
+
+  if (!match) {
+    return <div className="container mt-4">{t("No match data available")}</div>;
   }
 
   if (!match.players.some((playerObj) => playerObj.player.userId === user.id)) {
     return (
-      <div className="container mt-4">
-        {t("You didn't participate in this match")}
-      </div>
+      <Card className="container mt-4">
+        <Card.Body>
+          <Card.Title>{t("You didn't participate in this match")}</Card.Title>
+          {success && (
+            <Alert variant="success" className="mt-3">
+              {success}
+            </Alert>
+          )}
+          <Card.Text>
+            {t("Date")}: {new Date(match.date).toLocaleDateString()}
+            <br />
+            {t("Players")}:{" "}
+            {match.players.map((playerObj) => (
+              <span
+                key={playerObj.player._id}
+                className={
+                  match.ratings.some(
+                    (rating) => rating.voter === playerObj.player.userId
+                  )
+                    ? "text-success"
+                    : ""
+                }
+              >
+                {playerObj.player.name}
+                {playerObj !== match.players[match.players.length - 1] && ", "}
+              </span>
+            ))}
+            <br />
+            {t("Result")}: {match.result}
+          </Card.Text>
+        </Card.Body>
+      </Card>
     );
   }
 
   const hasUserVoted = match.ratings.some((rating) => rating.voter === user.id);
 
-  if (hasUserVoted) {
+  if (hasUserVoted || success) {
     return (
       <Card className="container mt-4">
         <Card.Body>
-          <Card.Title>{t("You already voted for this match")}</Card.Title>
+          <Card.Title>
+            {success
+              ? t("Vote Submitted Successfully")
+              : t("You already voted for this match")}
+          </Card.Title>
+          {success && (
+            <Alert variant="success" className="mt-3">
+              {success}
+            </Alert>
+          )}
           <Card.Text>
             {t("Date")}: {new Date(match.date).toLocaleDateString()}
             <br />
@@ -184,11 +232,6 @@ const VoteMatch = () => {
       {error && (
         <Alert variant="danger" className="mt-3">
           {t(error)}
-        </Alert>
-      )}
-      {success && (
-        <Alert variant="success" className="mt-3">
-          {t(success)}
         </Alert>
       )}
     </div>

@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useContext } from "react";
 import {
   BrowserRouter as Router,
@@ -16,7 +15,7 @@ import VoteMatch from "./components/VoteMatch";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import LoadMatch from "./components/LoadMatch";
-import GenerateTeams from "./components/GenerateTeams"; // Import the GenerateTeams component
+import GenerateTeams from "./components/GenerateTeams";
 import LanguageSelector from "./components/LanguageSelector";
 import { AuthContext } from "./context/AuthContext";
 import "./App.css";
@@ -30,7 +29,7 @@ function App() {
       <div className="App unselectable">
         {isAuthenticated && (
           <header className="App-header">
-            <nav>
+            <nav className="scrollable-navbar">
               <ul>
                 <li>
                   <Link to="/">{t("Home")}</Link>
@@ -47,15 +46,13 @@ function App() {
                 <li>
                   <Link to="/vote-match">{t("Vote Match")}</Link>
                 </li>
+                <li>
+                  <Link to="/generate-teams">{t("Generate Teams")}</Link>
+                </li>
                 {role === "admin" && (
-                  <>
-                    <li>
-                      <Link to="/load-match">{t("Load Match")}</Link>
-                    </li>
-                    <li>
-                      <Link to="/generate-teams">{t("Generate Teams")}</Link>
-                    </li>
-                  </>
+                  <li>
+                    <Link to="/load-match">{t("Load Match")}</Link>
+                  </li>
                 )}
                 <li>
                   <LanguageSelector />
@@ -89,23 +86,21 @@ function App() {
             path="/vote-match"
             element={isAuthenticated ? <VoteMatch /> : <Navigate to="/login" />}
           />
+          <Route
+            path="/generate-teams"
+            element={
+              isAuthenticated ? <GenerateTeams /> : <Navigate to="/login" />
+            }
+          />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           {role === "admin" && (
-            <>
-              <Route
-                path="/load-match"
-                element={
-                  isAuthenticated ? <LoadMatch /> : <Navigate to="/login" />
-                }
-              />
-              <Route
-                path="/generate-teams"
-                element={
-                  isAuthenticated ? <GenerateTeams /> : <Navigate to="/login" />
-                }
-              />
-            </>
+            <Route
+              path="/load-match"
+              element={
+                isAuthenticated ? <LoadMatch /> : <Navigate to="/login" />
+              }
+            />
           )}
         </Routes>
       </div>

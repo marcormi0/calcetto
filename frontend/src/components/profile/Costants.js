@@ -129,7 +129,7 @@ export const flagOptions = [
     name: "Italy",
     src: "/flags/it.png",
     criteria: (playerStats) => playerStats.matchesPlayed > 0,
-    description: "Italy Flag",
+    description: "Play 1 match to unlock",
   },
   {
     name: "United Kingdom",

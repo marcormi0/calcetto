@@ -11,28 +11,42 @@ body {
 
 .App-header {
   background-color: #282c34;
-  padding: 20px;
+  padding: 10px 0;
   color: white;
 }
 
-nav ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  justify-content: center;
+.scrollable-navbar {
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
 }
 
-nav ul li {
+.scrollable-navbar::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+.scrollable-navbar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+}
+
+.scrollable-navbar ul li {
   margin: 0 15px;
 }
 
-nav ul li a {
+.scrollable-navbar ul li a {
   color: white;
   text-decoration: none;
   font-weight: bold;
+  padding: 10px 0;
+  display: inline-block;
 }
 
-nav ul li a:hover {
+.scrollable-navbar ul li a:hover {
   text-decoration: underline;
 }
 
@@ -63,4 +77,10 @@ input[type="number"] {
   margin: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .scrollable-navbar ul li {
+    margin: 0 10px;
+  }
 }
