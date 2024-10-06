@@ -24,6 +24,17 @@
   flex-direction: column;
 }
 
+@media (max-width: 768px) {
+  .teams {
+    flex-direction: column;
+  }
+
+  .team {
+    width: 100%;
+  }
+}
+
+
 .team h5 {
   background-color: #e9ecef;
   padding: 10px;

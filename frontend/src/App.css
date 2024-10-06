@@ -3,7 +3,32 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f4f4f9;
+  overflow-x: auto; /* Allow horizontal scrolling when content overflows */
 }
+
+.unselectable {
+  user-select: none;
+}
+
+.navbar {
+  padding: 0.75rem 1rem;
+}
+
+.navbar-dark .navbar-brand {
+  color: white;
+  font-weight: bold;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: white;
+  font-weight: bold;
+  margin-right: 15px;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: #f8f9fa;
+}
+
 
 .App {
   text-align: center;
@@ -13,18 +38,24 @@ body {
   background-color: #282c34;
   padding: 10px 0;
   color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100vw; /* Ensure it covers the viewport width initially */
+  min-width: 100%; /* Ensure it stretches beyond the viewport when content overflows */
+  overflow-x: hidden; /* Prevent any overflow of content from the header */
 }
 
 .scrollable-navbar {
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .scrollable-navbar::-webkit-scrollbar {
-  display: none; /* WebKit */
+  display: none;
 }
 
 .scrollable-navbar ul {
@@ -79,8 +110,22 @@ input[type="number"] {
   border-radius: 5px;
 }
 
+/* Handle table overflow */
+.table-responsive {
+  overflow-x: auto; /* Allow horizontal scrolling */
+  white-space: nowrap; /* Ensure content doesn't wrap and forces horizontal scroll */
+}
+
+.table {
+  min-width: 100%; /* Ensure the table fills the container */
+}
+
 @media (max-width: 768px) {
   .scrollable-navbar ul li {
     margin: 0 10px;
+  }
+
+  .scrollable-navbar {
+    padding-bottom: 5px;
   }
 }

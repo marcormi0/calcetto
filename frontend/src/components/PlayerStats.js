@@ -109,59 +109,61 @@ const PlayerStats = () => {
           ))}
         </Form.Select>
       </Form.Group>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>{t("Name")}</th>
-            <th>{t("Matches Played")}</th>
-            <th>{t("Wins")}</th>
-            <th>{t("Losses")}</th>
-            <th>{t("Draws")}</th>
-            <th>{t("Goals")}</th>
-            <th>{t("Assists")}</th>
-            <th>{t("MVP")}</th>
-            <th>{t("Performance")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {players.map((player, index) => (
-            <tr key={index}>
-              <td>
-                <OverlayTrigger
-                  trigger={["hover", "focus"]}
-                  placement="top"
-                  overlay={
-                    <Popover id={`popover-${player.name}`}>
-                      <Popover.Body>
-                        <AvatarTooltip
-                          player={player}
-                          isMvp={
-                            player.stats.mvpCount === highestMvpCount &&
-                            highestMvpCount > 0
-                          }
-                          mvpTie={mvpTie}
-                        />{" "}
-                      </Popover.Body>
-                    </Popover>
-                  }
-                >
-                  <span>{player.name}</span>
-                </OverlayTrigger>
-              </td>
-              <td>{player.stats.matchesPlayed}</td>
-              <td>{player.stats.wins}</td>
-              <td>{player.stats.losses}</td>
-              <td>{player.stats.draws}</td>
-              <td>{player.stats.goals}</td>
-              <td>{player.stats.assists}</td>
-              <td>{player.stats.mvpCount || 0}</td>
-              <td className="text-center">
-                <PerformanceCell player={player} />
-              </td>
+      <div className="table-responsive">
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>{t("Name")}</th>
+              <th>{t("Matches Played")}</th>
+              <th>{t("Wins")}</th>
+              <th>{t("Losses")}</th>
+              <th>{t("Draws")}</th>
+              <th>{t("Goals")}</th>
+              <th>{t("Assists")}</th>
+              <th>{t("MVP")}</th>
+              <th>{t("Performance")}</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {players.map((player, index) => (
+              <tr key={index}>
+                <td>
+                  <OverlayTrigger
+                    trigger={["hover", "focus"]}
+                    placement="top"
+                    overlay={
+                      <Popover id={`popover-${player.name}`}>
+                        <Popover.Body>
+                          <AvatarTooltip
+                            player={player}
+                            isMvp={
+                              player.stats.mvpCount === highestMvpCount &&
+                              highestMvpCount > 0
+                            }
+                            mvpTie={mvpTie}
+                          />{" "}
+                        </Popover.Body>
+                      </Popover>
+                    }
+                  >
+                    <span>{player.name}</span>
+                  </OverlayTrigger>
+                </td>
+                <td>{player.stats.matchesPlayed}</td>
+                <td>{player.stats.wins}</td>
+                <td>{player.stats.losses}</td>
+                <td>{player.stats.draws}</td>
+                <td>{player.stats.goals}</td>
+                <td>{player.stats.assists}</td>
+                <td>{player.stats.mvpCount || 0}</td>
+                <td className="text-center">
+                  <PerformanceCell player={player} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
     </Container>
   );
 };
@@ -203,8 +205,8 @@ const AvatarTooltip = ({ player, isMvp, mvpTie }) => {
           alt="Avatar"
           style={{
             position: "relative",
-            width: "100%",
-            height: "100%",
+            width: "150px",
+            height: "150px",
             objectFit: "cover",
             zIndex: 2,
           }}

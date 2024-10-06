@@ -133,27 +133,45 @@ export const flagOptions = [
   },
   {
     name: "United Kingdom",
-    src: "/flags/uk.png",
-    criteria: (playerStats) => playerStats.matchesPlayed > 3,
+    src: "/flags/en.png",
+    criteria: (playerStats) => playerStats.matchesPlayed > 2,
     description: "Play 3 matches to unlock",
   },
   {
     name: "France",
     src: "/flags/fr.png",
-    criteria: (playerStats) => playerStats.matchesPlayed > 3,
+    criteria: (playerStats) => playerStats.matchesPlayed > 2,
     description: "Play 3 matches to unlock",
   },
   {
     name: "Germany",
     src: "/flags/de.png",
-    criteria: (playerStats) => playerStats.matchesPlayed > 3,
+    criteria: (playerStats) => playerStats.matchesPlayed > 2,
     description: "Play 3 matches to unlock",
   },
   {
     name: "Spain",
     src: "/flags/es.png",
-    criteria: (playerStats) => playerStats.matchesPlayed > 3,
+    criteria: (playerStats) => playerStats.matchesPlayed > 2,
     description: "Play 3 matches to unlock",
+  },
+  {
+    name: "Brasil",
+    src: "/flags/bra.png",
+    criteria: (playerStats) => playerStats.matchesPlayed > 4,
+    description: "Play 5 matches to unlock",
+  },
+  {
+    name: "Argentina",
+    src: "/flags/arg.png",
+    criteria: (playerStats) => playerStats.matchesPlayed > 4,
+    description: "Play 5 matches to unlock",
+  },
+  {
+    name: "Marocco",
+    src: "/flags/mar.png",
+    criteria: (playerStats) => playerStats.matchesPlayed > 4,
+    description: "Play 5 matches to unlock",
   },
   // Add more flags as needed
 ];
