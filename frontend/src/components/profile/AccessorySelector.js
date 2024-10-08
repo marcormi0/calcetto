@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import NavigableRow from "./NavigableRows";
 import { accessoryOptions } from "./Costants";
@@ -50,8 +49,7 @@ const AccessorySelector = ({ accessories, setAccessories, playerStats }) => {
   };
 
   return (
-    <Form.Group className="mb-4">
-      <Form.Label>{t("Select Accessories")}</Form.Label>
+    <>
       <NavigableRow
         options={accessoryOptions}
         selectedItem={accessories}
@@ -62,7 +60,7 @@ const AccessorySelector = ({ accessories, setAccessories, playerStats }) => {
         multiple={true}
         isItemAvailable={(item) => isAccessoryAvailable(item, playerStats)}
       />
-    </Form.Group>
+    </>
   );
 };
 

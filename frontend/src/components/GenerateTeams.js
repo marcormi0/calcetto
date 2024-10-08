@@ -10,6 +10,7 @@ const GenerateTeams = () => {
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [error, setError] = useState("");
   const [teams, setTeams] = useState(null);
+  const [selectedForSwap, setSelectedForSwap] = useState([]);
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -151,6 +152,82 @@ const GenerateTeams = () => {
     );
   };
 
+  const handlePlayerSwapSelection = (player, teamIndex) => {
+    setSelectedForSwap((prev) => {
+      const newSelection = [...prev];
+      const existingIndex = newSelection.findIndex(
+        (p) => p.player.name === player.name
+      );
+
+      if (existingIndex !== -1) {
+        // If player is already selected, remove them
+        newSelection.splice(existingIndex, 1);
+      } else if (newSelection.length < 2) {
+        // If less than 2 players are selected, add this player
+        newSelection.push({ player, teamIndex });
+      } else {
+        // If 2 players are already selected, replace the player from the same team
+        const sameTeamIndex = newSelection.findIndex(
+          (p) => p.teamIndex === teamIndex
+        );
+        if (sameTeamIndex !== -1) {
+          newSelection[sameTeamIndex] = { player, teamIndex };
+        }
+        // If no player from the same team is selected, do nothing
+      }
+
+      return newSelection;
+    });
+  };
+
+  const swapPlayers = () => {
+    if (selectedForSwap.length !== 2) {
+      setError("Please select one player from each team to swap.");
+      return;
+    }
+
+    setTeams((prevTeams) => {
+      const newTeams = JSON.parse(JSON.stringify(prevTeams)); // Deep copy
+
+      selectedForSwap.forEach(({ player, teamIndex }) => {
+        const sourceTeam = teamIndex === 0 ? "team1" : "team2";
+        const targetTeam = teamIndex === 0 ? "team2" : "team1";
+
+        const sourceIndex = newTeams[sourceTeam].players.findIndex(
+          (p) => p.name === player.name
+        );
+        const targetIndex = newTeams[targetTeam].players.findIndex(
+          (p) =>
+            p.name ===
+            selectedForSwap.find((sp) => sp.teamIndex !== teamIndex).player.name
+        );
+
+        // Swap players
+        [
+          newTeams[sourceTeam].players[sourceIndex],
+          newTeams[targetTeam].players[targetIndex],
+        ] = [
+          newTeams[targetTeam].players[targetIndex],
+          newTeams[sourceTeam].players[sourceIndex],
+        ];
+      });
+
+      // Recalculate total performance
+      newTeams.team1.totalPerformance = newTeams.team1.players.reduce(
+        (sum, player) => sum + player.performance,
+        0
+      );
+      newTeams.team2.totalPerformance = newTeams.team2.players.reduce(
+        (sum, player) => sum + player.performance,
+        0
+      );
+
+      return newTeams;
+    });
+
+    setSelectedForSwap([]);
+  };
+
   if (teams) {
     return (
       <div className="container mt-4">
@@ -163,7 +240,18 @@ const GenerateTeams = () => {
             </h3>
             <ul className="list-group">
               {teams.team1.players.map((player) => (
-                <li key={player.name} className="list-group-item">
+                <li
+                  key={player.name}
+                  className={`list-group-item ${
+                    selectedForSwap.some(
+                      (p) => p.player.name === player.name && p.teamIndex === 0
+                    )
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() => handlePlayerSwapSelection(player, 0)}
+                  style={{ cursor: "pointer" }}
+                >
                   {player.name} (Performance:{" "}
                   {player.performance?.toFixed(2) || "N/A"})
                 </li>
@@ -177,7 +265,18 @@ const GenerateTeams = () => {
             </h3>
             <ul className="list-group">
               {teams.team2.players.map((player) => (
-                <li key={player.name} className="list-group-item">
+                <li
+                  key={player.name}
+                  className={`list-group-item ${
+                    selectedForSwap.some(
+                      (p) => p.player.name === player.name && p.teamIndex === 1
+                    )
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() => handlePlayerSwapSelection(player, 1)}
+                  style={{ cursor: "pointer" }}
+                >
                   {player.name} (Performance:{" "}
                   {player.performance?.toFixed(2) || "N/A"})
                 </li>
@@ -186,15 +285,21 @@ const GenerateTeams = () => {
           </div>
         </div>
         <div className="mt-3">
-          <div className="mt-3">
-            <button className="btn btn-primary me-3" onClick={resetTeams}>
-              {t("Generate New Teams")}
-            </button>
-            <button className="btn btn-secondary" onClick={reshuffleTeams}>
-              {t("Reshuffle")}
-            </button>
-          </div>
+          <button className="btn btn-primary me-3" onClick={resetTeams}>
+            {t("Generate New Teams")}
+          </button>
+          <button className="btn btn-secondary me-3" onClick={reshuffleTeams}>
+            {t("Reshuffle")}
+          </button>
+          <button
+            className="btn btn-warning"
+            onClick={swapPlayers}
+            disabled={selectedForSwap.length !== 2}
+          >
+            {t("Swap Players")}
+          </button>
         </div>
+        {error && <div className="alert alert-danger mt-3">{t(error)}</div>}
       </div>
     );
   }

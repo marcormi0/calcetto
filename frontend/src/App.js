@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -23,41 +23,73 @@ import "./App.css";
 function App() {
   const { isAuthenticated, role } = useContext(AuthContext);
   const { t } = useTranslation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const NavLinks = () => (
+    <>
+      <li>
+        <Link to="/" onClick={toggleMenu}>
+          {t("Home")}
+        </Link>
+      </li>
+      <li>
+        <Link to="/match-history" onClick={toggleMenu}>
+          {t("Match History")}
+        </Link>
+      </li>
+      <li>
+        <Link to="/profile" onClick={toggleMenu}>
+          {t("Profile")}
+        </Link>
+      </li>
+      <li>
+        <Link to="/player-stats" onClick={toggleMenu}>
+          {t("Player Stats")}
+        </Link>
+      </li>
+      <li>
+        <Link to="/vote-match" onClick={toggleMenu}>
+          {t("Vote Match")}
+        </Link>
+      </li>
+      <li>
+        <Link to="/generate-teams" onClick={toggleMenu}>
+          {t("Generate Teams")}
+        </Link>
+      </li>
+      {role === "admin" && (
+        <li>
+          <Link to="/load-match" onClick={toggleMenu}>
+            {t("Load Match")}
+          </Link>
+        </li>
+      )}
+    </>
+  );
 
   return (
     <Router>
       <div className="App unselectable">
         {isAuthenticated && (
           <header className="App-header">
-            <nav className="scrollable-navbar">
-              <ul>
-                <li>
-                  <Link to="/">{t("Home")}</Link>
-                </li>
-                <li>
-                  <Link to="/match-history">{t("Match History")}</Link>
-                </li>
-                <li>
-                  <Link to="/profile">{t("Profile")}</Link>
-                </li>
-                <li>
-                  <Link to="/player-stats">{t("Player Stats")}</Link>
-                </li>
-                <li>
-                  <Link to="/vote-match">{t("Vote Match")}</Link>
-                </li>
-                <li>
-                  <Link to="/generate-teams">{t("Generate Teams")}</Link>
-                </li>
-                {role === "admin" && (
-                  <li>
-                    <Link to="/load-match">{t("Load Match")}</Link>
-                  </li>
-                )}
-                <li>
+            <nav className="navbar">
+              <div className="navbar-container">
+                <div className="menu-icon" onClick={toggleMenu}>
+                  <div className="bar"></div>
+                  <div className="bar"></div>
+                  <div className="bar"></div>
+                </div>
+                <ul className={`nav-menu ${isMenuOpen ? "active" : ""}`}>
+                  <NavLinks />
+                </ul>
+                <div className="language-selector-container">
                   <LanguageSelector />
-                </li>
-              </ul>
+                </div>
+              </div>
             </nav>
           </header>
         )}

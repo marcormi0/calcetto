@@ -2,12 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { Container, Card, Form, Button, Alert } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import AvatarSelector from "./AvatarSelector";
-import AccessorySelector from "./AccessorySelector";
-import FlagSelector from "./FlagSelector";
 import AvatarPreview from "./AvatarPreview";
 import { fetchPlayerProfile, savePlayerProfile } from "./ProfileUtils";
 import { avatarOptions } from "./Costants";
+import CollapsibleSelectors from "./CollapsibleSelectord";
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -83,13 +81,11 @@ const Profile = () => {
                 accessories={accessories}
                 selectedFlag={selectedFlag}
               />
-              <AvatarSelector avatar={avatar} setAvatar={setAvatar} />
-              <AccessorySelector
+              <CollapsibleSelectors
+                avatar={avatar}
+                setAvatar={setAvatar}
                 accessories={accessories}
                 setAccessories={setAccessories}
-                playerStats={playerStats}
-              />
-              <FlagSelector
                 selectedFlag={selectedFlag}
                 setSelectedFlag={setSelectedFlag}
                 playerStats={playerStats}

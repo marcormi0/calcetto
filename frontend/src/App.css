@@ -3,32 +3,11 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f4f4f9;
-  overflow-x: auto; /* Allow horizontal scrolling when content overflows */
 }
 
 .unselectable {
   user-select: none;
 }
-
-.navbar {
-  padding: 0.75rem 1rem;
-}
-
-.navbar-dark .navbar-brand {
-  color: white;
-  font-weight: bold;
-}
-
-.navbar-dark .navbar-nav .nav-link {
-  color: white;
-  font-weight: bold;
-  margin-right: 15px;
-}
-
-.navbar-dark .navbar-nav .nav-link:hover {
-  color: #f8f9fa;
-}
-
 
 .App {
   text-align: center;
@@ -41,35 +20,35 @@ body {
   position: sticky;
   top: 0;
   z-index: 1000;
-  width: 100vw; /* Ensure it covers the viewport width initially */
-  min-width: 100%; /* Ensure it stretches beyond the viewport when content overflows */
-  overflow-x: hidden; /* Prevent any overflow of content from the header */
+  width: 100%;
 }
 
-.scrollable-navbar {
-  overflow-x: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
 }
 
-.scrollable-navbar::-webkit-scrollbar {
-  display: none;
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
-.scrollable-navbar ul {
+.nav-menu {
+  display: flex;
   list-style: none;
-  padding: 0;
   margin: 0;
-  display: inline-flex;
+  padding: 0;
 }
 
-.scrollable-navbar ul li {
+.nav-menu li {
   margin: 0 15px;
 }
 
-.scrollable-navbar ul li a {
+.nav-menu li a {
   color: white;
   text-decoration: none;
   font-weight: bold;
@@ -77,55 +56,72 @@ body {
   display: inline-block;
 }
 
-.scrollable-navbar ul li a:hover {
+.nav-menu li a:hover {
   text-decoration: underline;
 }
 
-.container {
-  padding: 20px;
-}
-
-h2 {
-  color: #333;
-}
-
-button {
-  padding: 10px 20px;
-  color: #fff;
-  background-color: #007bff;
-  border: none;
-  border-radius: 5px;
+.menu-icon {
+  display: none;
+  flex-direction: column;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #0056b3;
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  margin: 3px 0;
 }
 
-input[type="number"] {
-  width: 50px;
-  padding: 5px;
-  margin: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.language-selector-container {
+  margin-left: auto;
+  padding-left: 15px;
 }
 
-/* Handle table overflow */
-.table-responsive {
-  overflow-x: auto; /* Allow horizontal scrolling */
-  white-space: nowrap; /* Ensure content doesn't wrap and forces horizontal scroll */
-}
-
-.table {
-  min-width: 100%; /* Ensure the table fills the container */
-}
-
-@media (max-width: 768px) {
-  .scrollable-navbar ul li {
-    margin: 0 10px;
+@media screen and (max-width: 850px) {
+  .navbar-container {
+    justify-content: flex-start;
   }
 
-  .scrollable-navbar {
-    padding-bottom: 5px;
+  .menu-icon {
+    display: flex;
+  }
+
+  .nav-menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%; /* Changed from fixed pixel value to 100% */
+    left: 0;
+    background-color: rgba(40, 44, 52, 0.9);
+    padding: 10px 0;
+    align-items: flex-start;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-menu.active {
+    display: flex;
+  }
+
+  .nav-menu li {
+    margin: 5px 0;
+    width: 100%;
+    text-align: ce;
+  }
+
+  .nav-menu li a {
+    padding: 8px 20px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+
+  .language-selector-container {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }

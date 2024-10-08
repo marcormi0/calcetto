@@ -14,6 +14,7 @@ export const accessoryOptions = [
     category: "moustache",
     criteria: (playerStats) => playerStats.wins > 0,
     description: "Win 1 game to unlock",
+    zIndex: 3,
   },
   {
     name: "mous2",
@@ -21,6 +22,7 @@ export const accessoryOptions = [
     category: "moustache",
     criteria: (playerStats) => playerStats.wins > 4,
     description: "Win 5 games to unlock",
+    zIndex: 3,
   },
   {
     name: "mous3",
@@ -28,6 +30,7 @@ export const accessoryOptions = [
     category: "moustache",
     criteria: (playerStats) => playerStats.wins > 9,
     description: "Win 10 games to unlock",
+    zIndex: 3,
   },
   /* {
     name: "mous5",
@@ -42,6 +45,7 @@ export const accessoryOptions = [
     category: "eyewear",
     criteria: (playerStats) => playerStats.goals > 9,
     description: "Score 10 goals to unlock",
+    zIndex: 2,
   },
   {
     name: "Sunglasses2",
@@ -49,6 +53,7 @@ export const accessoryOptions = [
     category: "eyewear",
     criteria: (playerStats) => playerStats.goals > 19,
     description: "Score 20 goals to unlock",
+    zIndex: 2,
   },
   {
     name: "Sūpā Sutā Sangurasezu",
@@ -56,6 +61,7 @@ export const accessoryOptions = [
     category: "eyewear",
     criteria: (playerStats) => playerStats.goals > 29,
     description: "Score 30 goals to unlock",
+    zIndex: 2,
   },
   {
     name: "Necktie",
@@ -63,6 +69,7 @@ export const accessoryOptions = [
     category: "neck",
     criteria: (playerStats) => playerStats.assists > 9,
     description: "Make 10 assists to unlock",
+    zIndex: 1,
   },
   {
     name: "Bowtie",
@@ -70,6 +77,7 @@ export const accessoryOptions = [
     category: "neck",
     criteria: (playerStats) => playerStats.assists > 19,
     description: "Make 20 assists to unlock",
+    zIndex: 1,
   },
   {
     name: "BroChain",
@@ -77,6 +85,7 @@ export const accessoryOptions = [
     category: "neck",
     criteria: (playerStats) => playerStats.assists > 29,
     description: "Make 30 assists to unlock",
+    zIndex: 1,
   },
   {
     name: "mouth3",
@@ -84,6 +93,7 @@ export const accessoryOptions = [
     category: "moustache",
     criteria: (playerStats) => playerStats.goals > 4 && playerStats.assists > 4,
     description: "Score 5 goals and make 5 assists to unlock",
+    zIndex: 3,
   },
   {
     name: "mouth2",
@@ -92,6 +102,7 @@ export const accessoryOptions = [
     criteria: (playerStats) =>
       playerStats.goals > 14 && playerStats.assists > 14,
     description: "Score 15 goals and make 15 assists to unlock",
+    zIndex: 3,
   },
   {
     name: "mouth1",
@@ -100,6 +111,7 @@ export const accessoryOptions = [
     criteria: (playerStats) =>
       playerStats.goals > 29 && playerStats.assists > 29,
     description: "Score 30 goals and make 30 assists to unlock",
+    zIndex: 3,
   },
   /* {
     name: "Hat",
@@ -121,6 +133,7 @@ export const accessoryOptions = [
     category: "moustache",
     criteria: (playerStats) => playerStats.goals > 6000000,
     description: "Score 6 million goals to unlock",
+    zIndex: 3,
   },
 ];
 
