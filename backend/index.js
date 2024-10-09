@@ -13,6 +13,9 @@ const playerRoutes = require("./routes/players");
 const playerStatsRoutes = require("./routes/playerStats");
 const matchesRoutes = require("./routes/matches");
 
+const fs = require("fs").promises;
+const path = require("path");
+
 const app = express();
 app.use(express.json());
 app.use(passport.initialize());
@@ -26,7 +29,6 @@ if (process.env.NODE_ENV === "dev") {
   };
   app.use(cors(corsOptions));
 } else {
-  const path = require("path");
   app.use(express.static(path.join(__dirname, "../frontend/build")));
 }
 
@@ -103,26 +105,51 @@ app.get("/verify/:token", async (req, res) => {
       verificationTokenExpires: { $gt: Date.now() },
     });
 
+    let message, templatePath;
+
     if (!user) {
       console.log(`Invalid verification attempt with token: ${token}`);
-      return res
-        .status(400)
-        .json({ message: "Invalid or expired verification token" });
+      message = "Invalid or expired verification token";
+      templatePath = path.join(__dirname, "views", "verification-error.html");
+    } else {
+      user.isVerified = true;
+      user.verificationToken = undefined;
+      user.verificationTokenExpires = undefined;
+      await user.save();
+
+      console.log(
+        `User verified: ${user.email} at ${new Date().toISOString()}`
+      );
+      message = "Email verified successfully. You can now log in.";
+      templatePath = path.join(__dirname, "views", "verification-success.html");
     }
 
-    user.isVerified = true;
-    user.verificationToken = undefined;
-    user.verificationTokenExpires = undefined;
-    await user.save();
+    // Read the HTML file
+    let html = await fs.readFile(templatePath, "utf8");
 
-    console.log(`User verified: ${user.email} at ${new Date().toISOString()}`);
+    // Replace the placeholder with the actual message
+    html = html.replace("{{message}}", message);
 
-    res
-      .status(200)
-      .json({ message: "Email verified successfully. You can now log in." });
+    // Send the HTML response
+    res.send(html);
   } catch (error) {
     console.error(`Error during email verification: ${error.message}`);
-    res.status(500).json({ message: "Server error" });
+
+    // Read the error HTML file
+    const errorTemplatePath = path.join(
+      __dirname,
+      "views",
+      "verification-error.html"
+    );
+    let errorHtml = await fs.readFile(errorTemplatePath, "utf8");
+
+    // Replace the placeholder with a generic error message
+    errorHtml = errorHtml.replace(
+      "{{message}}",
+      "An error occurred during email verification. Please try again later."
+    );
+
+    res.status(500).send(errorHtml);
   }
 });
 

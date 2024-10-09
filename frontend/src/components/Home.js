@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Card, Button, Alert, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 function Home() {
   const { t } = useTranslation();
@@ -184,10 +185,9 @@ function Home() {
         <h2>{t("Home")}</h2>
         <p>{t("Welcome to the Calcetto App!")}</p>
         <p>
-          {t("Are you one of these players? If not create your own! ")}
-          <Button onClick={() => navigate("/profile")}>
-            {t("Create Profile")}
-          </Button>
+          {t("Are you one of these players? If not ")}
+          <Link to="/profile">{t("create your own")}</Link>
+          {t("!")}
         </p>
         <div className="row">
           {unlinkedPlayers.map((player) => (
