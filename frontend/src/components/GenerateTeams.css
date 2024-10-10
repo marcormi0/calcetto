@@ -25,3 +25,27 @@
     list-style-type: none;
     padding-left: 0;
   }
+
+  .scroll-to-top-arrow {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff; /* Bright blue */
+    color: white;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    animation: blueFlash 1s infinite alternate;
+    z-index: 1000;
+  }
+
+  @keyframes blueFlash {
+    from {
+      background-color: #007bff; /* Bright blue */
+      box-shadow: 0 0 5px #007bff;
+    }
+    to {
+      background-color: #00bfff; /* Deeper sky blue */
+      box-shadow: 0 0 20px #00bfff;
+    }
+  }

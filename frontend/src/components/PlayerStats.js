@@ -9,7 +9,7 @@ import {
   Button,
 } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { Info } from "lucide-react";
+import { Info, ChevronUp, ChevronDown } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./PlayerStats.css";
 
@@ -20,6 +20,62 @@ const PlayerStats = () => {
   const [selectedSeason, setSelectedSeason] = useState(getCurrentSeason());
   const [highestMvpCount, setHighestMvpCount] = useState(0);
   const [mvpTie, setMvpTie] = useState(false);
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "descending",
+  });
+
+  const sortedPlayers = React.useMemo(() => {
+    let sortablePlayers = [...players];
+    if (sortConfig.key !== null) {
+      sortablePlayers.sort((a, b) => {
+        let aValue = sortConfig.key
+          .split(".")
+          .reduce((obj, key) => obj[key], a);
+        let bValue = sortConfig.key
+          .split(".")
+          .reduce((obj, key) => obj[key], b);
+
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+
+        if (aValue < bValue) {
+          return sortConfig.direction === "ascending" ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === "ascending" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortablePlayers;
+  }, [players, sortConfig]);
+
+  const requestSort = (key) => {
+    let direction = "descending";
+    if (sortConfig.key === key) {
+      if (sortConfig.direction === "descending") {
+        direction = "ascending";
+      } else if (sortConfig.direction === "ascending") {
+        direction = null;
+      }
+    }
+    setSortConfig({ key: direction ? key : null, direction });
+  };
+
+  const SortableHeader = ({ column, label }) => {
+    return (
+      <th onClick={() => requestSort(column)} style={{ cursor: "pointer" }}>
+        {t(label)}
+        {sortConfig.key === column && (
+          <>
+            {sortConfig.direction === "ascending" && <ChevronUp size={16} />}
+            {sortConfig.direction === "descending" && <ChevronDown size={16} />}
+          </>
+        )}
+      </th>
+    );
+  };
 
   const seasons = [
     { value: "all", label: t("All Seasons") },
@@ -113,19 +169,22 @@ const PlayerStats = () => {
         <Table striped bordered hover>
           <thead>
             <tr>
-              <th>{t("Name")}</th>
-              <th>{t("Matches Played")}</th>
-              <th>{t("Wins")}</th>
-              <th>{t("Losses")}</th>
-              <th>{t("Draws")}</th>
-              <th>{t("Goals")}</th>
-              <th>{t("Assists")}</th>
-              <th>{t("MVP")}</th>
-              <th>{t("Performance")}</th>
+              <SortableHeader column="name" label="Name" />
+              <SortableHeader
+                column="stats.matchesPlayed"
+                label="Matches Played"
+              />
+              <SortableHeader column="stats.wins" label="Wins" />
+              <SortableHeader column="stats.losses" label="Losses" />
+              <SortableHeader column="stats.draws" label="Draws" />
+              <SortableHeader column="stats.goals" label="Goals" />
+              <SortableHeader column="stats.assists" label="Assists" />
+              <SortableHeader column="stats.mvpCount" label="MVP" />
+              <SortableHeader column="performance" label="Performance" />
             </tr>
           </thead>
           <tbody>
-            {players.map((player, index) => (
+            {sortedPlayers.map((player, index) => (
               <tr key={index}>
                 <td>
                   <OverlayTrigger
@@ -141,7 +200,7 @@ const PlayerStats = () => {
                               highestMvpCount > 0
                             }
                             mvpTie={mvpTie}
-                          />{" "}
+                          />
                         </Popover.Body>
                       </Popover>
                     }

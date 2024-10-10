@@ -1,8 +1,11 @@
 // src/components/GenerateTeams.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./GenerateTeams.css";
+import SoccerFieldTeams from "./SoccerFieldTeams";
+import { Card, Container } from "react-bootstrap";
+import { ArrowUp } from "lucide-react";
 
 const GenerateTeams = () => {
   const { t } = useTranslation();
@@ -11,6 +14,10 @@ const GenerateTeams = () => {
   const [error, setError] = useState("");
   const [teams, setTeams] = useState(null);
   const [selectedForSwap, setSelectedForSwap] = useState([]);
+  const [showScrollArrow, setShowScrollArrow] = useState(false);
+  const [isFirstGen, setIsFirstGen] = useState(true);
+  const generateTeamsButtonRef = useRef(null);
+  const topRef = useRef(null);
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -33,6 +40,27 @@ const GenerateTeams = () => {
 
     fetchPlayers();
   }, []);
+
+  useEffect(() => {
+    if (selectedPlayers.length === 10 && generateTeamsButtonRef.current) {
+      generateTeamsButtonRef.current.focus();
+    }
+  }, [selectedPlayers]);
+
+  useEffect(() => {
+    if (teams && isFirstGen) {
+      setShowScrollArrow(true);
+      const timer = setTimeout(() => {
+        setShowScrollArrow(false);
+        setIsFirstGen(false);
+      }, 3000); // Hide arrow after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [teams, isFirstGen]);
+
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handlePlayerClick = (playerName) => {
     let updatedPlayers = [...selectedPlayers];
@@ -78,6 +106,15 @@ const GenerateTeams = () => {
         team2.push(player);
         team2Performance += player.performance;
       }
+
+      /* if (isFirstGen) {
+        setTimeout(() => {
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: "smooth",
+          });
+        }, 100);
+      } */
     });
 
     // Try to balance teams by swapping players
@@ -162,18 +199,20 @@ const GenerateTeams = () => {
       if (existingIndex !== -1) {
         // If player is already selected, remove them
         newSelection.splice(existingIndex, 1);
-      } else if (newSelection.length < 2) {
-        // If less than 2 players are selected, add this player
-        newSelection.push({ player, teamIndex });
       } else {
-        // If 2 players are already selected, replace the player from the same team
+        // Check if a player from the same team is already selected
         const sameTeamIndex = newSelection.findIndex(
           (p) => p.teamIndex === teamIndex
         );
+
         if (sameTeamIndex !== -1) {
+          // If a player from the same team is already selected, replace them
           newSelection[sameTeamIndex] = { player, teamIndex };
+        } else if (newSelection.length < 2) {
+          // If less than 2 players are selected and no player from this team is selected, add this player
+          newSelection.push({ player, teamIndex });
         }
-        // If no player from the same team is selected, do nothing
+        // If 2 players are already selected from different teams, do nothing
       }
 
       return newSelection;
@@ -230,7 +269,7 @@ const GenerateTeams = () => {
 
   if (teams) {
     return (
-      <div className="container mt-4">
+      <div ref={topRef} className="container mt-4">
         <h2>{t("Generated Teams")}</h2>
         <div className="row">
           <div className="col-md-6">
@@ -300,6 +339,29 @@ const GenerateTeams = () => {
           </button>
         </div>
         {error && <div className="alert alert-danger mt-3">{t(error)}</div>}
+        <Container className="mt-4 unselectable">
+          <h2>{t("FORMAZIONI")}</h2>
+          <Card>
+            <Card.Body>
+              <Card.Title>{"BIANCHI VS NERI"}</Card.Title>
+              <Card.Text>
+                <div>
+                  {teams && (
+                    <SoccerFieldTeams
+                      team1={teams.team1.players}
+                      team2={teams.team2.players}
+                    />
+                  )}
+                </div>
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Container>
+        {showScrollArrow && (
+          <div className="scroll-to-top-arrow" onClick={handleScrollToTop}>
+            <ArrowUp size={24} />
+          </div>
+        )}
       </div>
     );
   }
@@ -310,22 +372,25 @@ const GenerateTeams = () => {
       <div className="form-group">
         <label>{t("Players")}</label>
         <div className="list-group">
-          {players.map((player) => (
-            <div
-              key={player.name}
-              className={`list-group-item d-flex ${
-                selectedPlayers.includes(player.name) ? "active" : ""
-              }`}
-              onClick={() => handlePlayerClick(player.name)}
-              style={{ cursor: "pointer" }}
-            >
-              {player.name} (Performance:{" "}
-              {player.performance?.toFixed(2) || "N/A"})
-            </div>
-          ))}
+          {players
+            .sort((a, b) => b.stats.matchesPlayed - a.stats.matchesPlayed) // Sort in descending order
+            .map((player) => (
+              <div
+                key={player.name}
+                className={`list-group-item d-flex ${
+                  selectedPlayers.includes(player.name) ? "active" : ""
+                }`}
+                onClick={() => handlePlayerClick(player.name)}
+                style={{ cursor: "pointer" }}
+              >
+                {player.name} (Performance:{" "}
+                {player.performance?.toFixed(2) || "N/A"})
+              </div>
+            ))}
         </div>
       </div>
       <button
+        ref={generateTeamsButtonRef}
         className="btn btn-primary mt-3"
         onClick={() => generateTeams()}
         disabled={selectedPlayers.length !== 10}
