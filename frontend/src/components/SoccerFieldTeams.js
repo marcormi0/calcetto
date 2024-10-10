@@ -4,14 +4,15 @@ import { useMediaQuery } from "../utils/useMediaQuery.js";
 
 const SoccerFieldTeams = ({ team1, team2 }) => {
   const isMobile = useMediaQuery("(max-width: 640px)");
+  const isSmallDesktop = useMediaQuery("(max-width: 1200px)");
 
   const PlayerAvatar = ({ player, position }) => (
     <div
       style={{
         position: "absolute",
         ...position,
-        width: isMobile ? "40px" : "140px",
-        height: isMobile ? "40px" : "150px",
+        width: isMobile ? "45px" : isSmallDesktop ? "70px" : "140px",
+        height: isMobile ? "45px" : isSmallDesktop ? "70px" : "150px",
       }}
     >
       <div
@@ -72,13 +73,13 @@ const SoccerFieldTeams = ({ team1, team2 }) => {
           color: "black",
           textAlign: "center",
           textTransform: "uppercase",
-          fontSize: isMobile ? "8px" : "20px",
+          fontSize: isMobile ? "8px" : isSmallDesktop ? "13px" : "20px",
           fontWeight: "bold",
           marginTop: "2px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-          width: isMobile ? "50px" : "150px",
+          width: isMobile ? "50px" : isSmallDesktop ? "70px" : "150px",
         }}
       >
         {player.name}
@@ -115,8 +116,8 @@ const SoccerFieldTeams = ({ team1, team2 }) => {
         style={{
           position: "relative",
           width: "100%",
-          paddingTop: "54%", // 4:3 aspect ratio
-          backgroundImage: 'url("/soccerfield1e85x1.png")', // Replace with actual soccer field image
+          paddingTop: "54%", // 1,85:1 aspect ratio
+          backgroundImage: 'url("/soccerfield1e85x1.png")',
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
