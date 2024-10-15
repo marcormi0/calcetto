@@ -63,7 +63,7 @@ const MatchHistory = () => {
         </h5>
         {sortedPlayers.map((playerObj) => (
           <div key={playerObj.player._id} className="player-info">
-            <span className="player-name" title={playerObj.player.name}>
+            <span className="player-name-mh" title={playerObj.player.name}>
               {playerObj.player.name}
             </span>
             <span className="goal-icons">{renderGoals(playerObj.goals)}</span>

@@ -54,7 +54,7 @@
   width: 100%;
 }
 
-.player-name {
+.player-name-mh {
   flex: 1;
   white-space: nowrap;
   overflow: hidden;

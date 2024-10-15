@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -24,10 +24,24 @@ function App() {
   const { isAuthenticated, role } = useContext(AuthContext);
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const NavLinks = () => (
     <>
@@ -77,7 +91,7 @@ function App() {
         {isAuthenticated && (
           <header className="App-header">
             <nav className="navbar">
-              <div className="navbar-container">
+              <div className="navbar-container" ref={menuRef}>
                 <div className="menu-icon" onClick={toggleMenu}>
                   <div className="bar"></div>
                   <div className="bar"></div>

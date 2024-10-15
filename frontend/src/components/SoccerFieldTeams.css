@@ -1,0 +1,124 @@
+.soccer-field-card {
+    width: 100%;
+  }
+
+  .soccer-field {
+    position: relative;
+    width: 100%;
+    padding-top: 54%; /* 1.85:1 aspect ratio */
+    background-image: url('../../public/soccerfield1e85x1.png');
+    background-size: cover;
+    background-position: center;
+  }
+
+  .player-avatar {
+    position: absolute;
+    width: 140px;
+    height: 150px;
+  }
+
+  .avatar-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .flag, .player-image, .accessory {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .flag {
+    z-index: 1;
+    border-radius: 5%;
+  }
+
+  .player-image {
+    z-index: 2;
+    border-radius: 15%;
+  }
+
+  .accessory {
+    z-index: 3;
+    object-fit: contain;
+  }
+
+  .player-name {
+    color: black;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 150px;
+  }
+
+  /* Team 1 Positions */
+  .team1.position-0 { left: 2%; top: 40%; }
+  .team1.position-1 { left: 17%; top: 40%; }
+  .team1.position-2 { left: 26%; top: 10%; }
+  .team1.position-3 { left: 26%; top: 70%; }
+  .team1.position-4 { left: 36%; top: 40%; }
+
+  /* Team 2 Positions */
+  .team2.position-0 { right: 2%; top: 40%; }
+  .team2.position-1 { right: 17%; top: 40%; }
+  .team2.position-2 { right: 26%; top: 10%; }
+  .team2.position-3 { right: 26%; top: 70%; }
+  .team2.position-4 { right: 36%; top: 40%; }
+
+  /* Responsive adjustments */
+  @media (max-width: 1200px) {
+    .player-avatar {
+      width: 70px;
+      height: 70px;
+    }
+    .player-name {
+      font-size: 13px;
+      width: 70px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .player-avatar {
+      width: 55px;
+      height: 55px;
+    }
+    .player-name {
+      font-size: 10px;
+      width: 55px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .player-avatar {
+      width: 45px;
+      height: 45px;
+    }
+    .player-name {
+      font-size: 7px;
+      width: 45px;
+    }
+    .team1.position-2, .team2.position-2 { top: 15%; }
+    .team1.position-3, .team2.position-3 { top: 70%; }
+  }
+
+  @media (max-width: 575px) {
+    .player-avatar {
+      width: 9vw;
+      height: 9vw;
+    }
+    .player-name {
+      font-size: 1.5vw;
+      width: 9vw;
+    }
+    .team1.position-2, .team2.position-2 { top: 12%; }
+    .team1.position-3, .team2.position-3 { top: 70%; }
+  }
