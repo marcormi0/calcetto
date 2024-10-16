@@ -274,7 +274,7 @@ const GenerateTeams = () => {
         <div className="row">
           <div className="col-md-6">
             <h3>
-              {t("Team 1")} ({t("Total Performance:")}{" "}
+              {t("White team")} ({t("Total Performance:")}{" "}
               {teams.team1.totalPerformance.toFixed(2)})
             </h3>
             <ul className="list-group">
@@ -299,7 +299,7 @@ const GenerateTeams = () => {
           </div>
           <div className="col-md-6">
             <h3>
-              {t("Team 2")} ({t("Total Performance:")}{" "}
+              {t("Black team")} ({t("Total Performance:")}{" "}
               {teams.team2.totalPerformance.toFixed(2)})
             </h3>
             <ul className="list-group">
@@ -340,10 +340,10 @@ const GenerateTeams = () => {
         </div>
         {error && <div className="alert alert-danger mt-3">{t(error)}</div>}
         <Container className="mt-4 unselectable">
-          <h2>{t("FORMAZIONI")}</h2>
+          <h2>{t("FORMATIONS")}</h2>
           <Card>
             <Card.Body>
-              <Card.Title>{"BIANCHI VS NERI"}</Card.Title>
+              <Card.Title>{t("WHITE VS BLACK")}</Card.Title>
               <Card.Text>
                 <div>
                   {teams && (

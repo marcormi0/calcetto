@@ -144,6 +144,10 @@ const resources = {
       "Team 1": "Squadra 1",
       "Team 2": "Squadra 2",
       "Total Performance:": "Totale Performance:",
+      "White team": "Bianchi",
+      "Black team": "Neri",
+      FORMATIONS: "FORMAZIONI",
+      "WHITE VS BLACK": "BIANCHI VS NERI",
     },
   },
 };

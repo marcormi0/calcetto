@@ -13,7 +13,7 @@
 
   .player-avatar {
     position: absolute;
-    width: 140px;
+    width: 150px;
     height: 150px;
   }
 
@@ -97,7 +97,7 @@
     }
   }
 
-  @media (max-width: 640px) {
+  /* @media (max-width: 640px) {
     .player-avatar {
       width: 45px;
       height: 45px;
@@ -108,9 +108,9 @@
     }
     .team1.position-2, .team2.position-2 { top: 15%; }
     .team1.position-3, .team2.position-3 { top: 70%; }
-  }
+  } */
 
-  @media (max-width: 575px) {
+  @media (max-width: 640px) {
     .player-avatar {
       width: 9vw;
       height: 9vw;
