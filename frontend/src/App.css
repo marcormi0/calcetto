@@ -37,6 +37,11 @@ body {
   width: 100%;
 }
 
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
 .nav-menu {
   display: flex;
   list-style: none;
@@ -74,8 +79,76 @@ body {
 }
 
 .language-selector-container {
-  margin-left: auto;
-  padding-left: 15px;
+  margin-left: 15px; /* Changed from auto to a fixed value */
+}
+
+/* Notification styles */
+.notifications-container {
+  position: relative;
+}
+.notification-icon {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+  transition: opacity 0.3s;
+}
+.notification-icon:hover {
+  opacity: 0.8;
+}
+.notification-counter {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4136;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 5px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+.notifications-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+.notifications-header {
+  padding: 10px 15px;
+  border-bottom: 1px solid #e1e1e1;
+  font-weight: bold;
+  color: #333;
+}
+.notifications-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.notification-item {
+  padding: 10px 15px;
+  border-bottom: 1px solid #e1e1e1;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  color: #333;
+}
+.notification-item:hover {
+  background-color: #f5f5f5;
+}
+.notification-item.unread {
+  font-weight: bold;
+  background-color: #e6f3ff;
+}
+.no-notifications {
+  padding: 15px;
+  color: #666;
+  text-align: center;
 }
 
 @media screen and (max-width: 850px) {
@@ -118,10 +191,26 @@ body {
     white-space: nowrap;
   }
 
-  .language-selector-container {
+  .navbar-right {
     position: absolute;
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+  }
+
+  .language-selector-container {
+    margin-left: 15px; /* Adds space between notifications and language selector */
+  }
+
+  .notifications-container {
+    position: static; /* Change from absolute to static */
+    transform: none; /* Remove transform */
+  }
+
+  .notifications-dropdown {
+    right: 0; /* Adjust dropdown position */
+    top: 100%; /* Position dropdown below the icon */
   }
 }

@@ -12,6 +12,7 @@ const User = require("./models/User");
 const playerRoutes = require("./routes/players");
 const playerStatsRoutes = require("./routes/playerStats");
 const matchesRoutes = require("./routes/matches");
+const notificationRoutes = require("./routes/notifications");
 
 const fs = require("fs").promises;
 const path = require("path");
@@ -45,6 +46,9 @@ app.use("/playerStats", playerStatsRoutes);
 
 //import matches routes
 app.use("/matches", matchesRoutes);
+
+//import notifications routes
+app.use("/notifications", notificationRoutes);
 
 app.post("/register", async (req, res) => {
   const { email, password, name } = req.body;

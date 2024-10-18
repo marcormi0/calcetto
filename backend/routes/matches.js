@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Match = require("../models/Match");
 const passport = require("passport");
+const Notification = require("../models/Notification");
 const Player = require("../models/Player");
 const adminAuth = require("../middleware/auth");
 
@@ -96,6 +97,34 @@ router.post("/load-match", adminAuth, async (req, res) => {
       result,
     });
     await newMatch.save();
+
+    // Fetch userIds for all players
+    const playerIds = players.map((player) => player.player);
+    const playerDocuments = await Player.find({
+      _id: { $in: playerIds },
+    }).select("userId");
+
+    // Create a map of playerId to userId
+    const playerIdToUserIdMap = playerDocuments.reduce((map, player) => {
+      map[player._id.toString()] = player.userId;
+      return map;
+    }, {});
+
+    // Create notifications for all players
+    const notifications = players
+      .map((player) => {
+        const userId = playerIdToUserIdMap[player.player.toString()];
+        return {
+          user: userId,
+          message: "A new match you participated in has been loaded.",
+          type: "match_loaded",
+        };
+      })
+      .filter((notification) => notification.user); // Filter out any notifications where userId is null
+
+    if (notifications.length > 0) {
+      await Notification.insertMany(notifications);
+    }
 
     res.status(201).json({
       message: "Match information loaded successfully",

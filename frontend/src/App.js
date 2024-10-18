@@ -17,6 +17,7 @@ import Login from "./components/Login";
 import LoadMatch from "./components/LoadMatch";
 import GenerateTeams from "./components/GenerateTeams";
 import LanguageSelector from "./components/LanguageSelector";
+import Notifications from "./components/Notifications";
 import { AuthContext } from "./context/AuthContext";
 import "./App.css";
 
@@ -100,8 +101,11 @@ function App() {
                 <ul className={`nav-menu ${isMenuOpen ? "active" : ""}`}>
                   <NavLinks />
                 </ul>
-                <div className="language-selector-container">
-                  <LanguageSelector />
+                <div className="navbar-right">
+                  <Notifications />
+                  <div className="language-selector-container">
+                    <LanguageSelector />
+                  </div>
                 </div>
               </div>
             </nav>
